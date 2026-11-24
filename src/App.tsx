@@ -31,6 +31,7 @@ export default function App() {
   const [shelfBumpKey, setShelfBumpKey] = useState(0);
   const [shuffleNonce, setShuffleNonce] = useState(0);
   const [toast, setToast] = useState<{ id: number; text: string } | null>(null);
+  const [mobileGridHeight, setMobileGridHeight] = useState<number | null>(null);
 
   const shelfBadgeRef = useRef<HTMLSpanElement | null>(null);
   const toastTimerRef = useRef<number | null>(null);
@@ -59,10 +60,20 @@ export default function App() {
 
   // Sync body classes for CSS state transitions
   useEffect(() => {
-    document.body.classList.toggle('focus', activeBookIndex !== null);
-    document.body.classList.toggle('grid-mode', layoutMode === 'grid');
-    document.body.dataset.state =
-      activeBookIndex !== null ? 'focus' : layoutMode;
+    const isGrid = layoutMode === 'grid';
+    const isFocus = activeBookIndex !== null;
+    const allowMobileGridScroll = isGrid && !isFocus;
+
+    document.body.classList.toggle('focus', isFocus);
+    document.body.classList.toggle('grid-mode', isGrid);
+    document.body.classList.toggle('mobile-grid-scroll', allowMobileGridScroll);
+    document.documentElement.classList.toggle('mobile-grid-scroll', allowMobileGridScroll);
+
+    if (!allowMobileGridScroll && window.scrollY > 0) {
+      window.scrollTo(0, 0);
+    }
+
+    document.body.dataset.state = isFocus ? 'focus' : layoutMode;
   }, [activeBookIndex, layoutMode]);
 
   const activeBooks = useMemo(
@@ -162,7 +173,18 @@ export default function App() {
   const focusedBook = activeBookIndex !== null ? BOOKS[activeBookIndex] ?? null : null;
 
   return (
-    <main className="relative h-full w-full overflow-hidden select-none">
+    <main
+      className={`relative w-full select-none ${
+        layoutMode === 'grid' && activeBookIndex === null
+          ? 'min-h-full overflow-x-hidden'
+          : 'h-full overflow-hidden'
+      }`}
+      style={
+        mobileGridHeight && layoutMode === 'grid' && activeBookIndex === null
+          ? { minHeight: `${mobileGridHeight}px` }
+          : undefined
+      }
+    >
       <BookStage
         activeBookIndex={activeBookIndex}
         isSampleOpen={isSampleOpen}
@@ -173,6 +195,7 @@ export default function App() {
         onToggleSample={handleToggleSample}
         onCloseFocus={closeFocus}
         onThrowToast={handleThrowToast}
+        onMobileGridHeightChange={setMobileGridHeight}
       />
 
       <TopBar

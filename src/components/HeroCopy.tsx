@@ -80,11 +80,17 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
           </span>
         </h1>
 
-        <p className="mt-3 md:mt-5 mb-0 text-[13.5px] md:text-[17px] leading-[1.45] md:leading-[1.5] text-[#86827a] font-normal max-w-[240px] md:max-w-[440px]">
+        <p
+          className={`mt-3 md:mt-5 mb-0 leading-[1.45] md:leading-[1.5] text-[#86827a] font-normal ${
+            layoutMode === 'grid'
+              ? 'text-[14.5px] md:text-[17px] max-w-[330px] md:max-w-[440px]'
+              : 'text-[13.5px] md:text-[17px] max-w-[240px] md:max-w-[440px]'
+          }`}
+        >
           A digital library of design books for curious creatives.
         </p>
 
-        <div className="mt-5 md:mt-7 flex flex-col items-center gap-3 md:gap-3.5 pointer-events-auto">
+        <div className="mt-5 md:mt-7 flex flex-col items-center gap-3 md:gap-3.5 pointer-events-auto w-full">
           <button
             type="button"
             onClick={onToggleLayout}
@@ -95,7 +101,11 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
           </button>
 
           <div
-            className="flex flex-wrap items-center justify-center gap-1.5 max-w-[252px] md:max-w-none"
+            className={
+              layoutMode === 'grid'
+                ? 'flex flex-nowrap items-center justify-center gap-1 md:gap-1.5 max-w-full overflow-x-auto no-scrollbar px-1'
+                : 'flex flex-wrap items-center justify-center gap-1.5 max-w-[252px] md:max-w-none'
+            }
             role="group"
             aria-label="Filter by category"
           >
@@ -107,7 +117,11 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => onToggleCategory(category)}
-                  className={`inline-flex items-center gap-1.5 h-7 md:h-8 px-2.5 md:px-3 rounded-full text-[11px] md:text-[12px] font-medium border transition-colors cursor-pointer whitespace-nowrap ${
+                  className={`inline-flex items-center shrink-0 rounded-full font-medium border transition-colors cursor-pointer whitespace-nowrap ${
+                    layoutMode === 'grid'
+                      ? 'gap-1 md:gap-1.5 h-8 px-2.5 md:px-3 text-[11px] md:text-[12px]'
+                      : 'gap-1.5 h-7 md:h-8 px-2.5 md:px-3 text-[11px] md:text-[12px]'
+                  } ${
                     isActive
                       ? 'bg-[#141414] text-[#f4f1ea] border-[#141414]'
                       : 'bg-[#fbfaf6]/75 text-[#141414] border-[rgba(20,20,20,0.1)] hover:border-[rgba(20,20,20,0.28)]'

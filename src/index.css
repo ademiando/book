@@ -552,13 +552,72 @@ body.focus .corners-bottom * {
   animation: shelfBump 0.42s var(--spring);
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Responsive (<760px) */
 @media (max-width: 759px) {
   .headline-text {
     font-size: 10.2vw;
   }
 
-  body.grid-mode .hero-copy-inner {
-    transform: translateY(calc(-50vh + 226px)) scale(0.54);
+  html.mobile-grid-scroll,
+  body.mobile-grid-scroll {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.mobile-grid-scroll #root {
+    height: auto;
+    min-height: 100%;
+  }
+
+  body.mobile-grid-scroll .top-bar {
+    position: absolute;
+  }
+
+  body.mobile-grid-scroll #stage-bg {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    touch-action: pan-y;
+  }
+
+  body.mobile-grid-scroll #stage {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    touch-action: pan-y;
+  }
+
+  body.mobile-grid-scroll .book {
+    touch-action: pan-y;
+  }
+
+  body.mobile-grid-scroll .hero-copy {
+    position: relative;
+    inset: auto;
+    align-items: flex-start;
+    padding: 142px 14px 20px;
+  }
+
+  body.mobile-grid-scroll .hero-copy-inner {
+    transform: none !important;
+    max-width: 100% !important;
+    width: 100%;
+  }
+
+  body.mobile-grid-scroll .headline-text {
+    font-size: clamp(32px, 9.2vw, 44px);
   }
 }

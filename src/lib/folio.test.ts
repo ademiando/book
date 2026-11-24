@@ -164,28 +164,31 @@ test('grid and focus targets compute valid bounds on desktop and mobile', () => 
   assert.equal(mobileDims.isMobile, true);
   assert.ok(mobileDims.bw <= 140);
 
-  // Verify mobile grid never overlaps search/hero top or bottom switch even on compact 375x667 screens
-  const compactDims = getBookDimensions(375);
-  const row0Compact = computeGridTarget({
-    dims: compactDims,
-    viewportWidth: 375,
-    viewportHeight: 667,
+  // Mobile grid renders 3 columns starting cleanly below mobileStartY
+  const row0Mobile = computeGridTarget({
+    dims: mobileDims,
+    viewportWidth: 390,
+    viewportHeight: 844,
     activeSlot: 0,
     activeCount: 12,
     mx: 0.5,
     my: 0.5,
     isHovered: false,
+    mobileStartY: 400,
   });
-  const row3Compact = computeGridTarget({
-    dims: compactDims,
-    viewportWidth: 375,
-    viewportHeight: 667,
-    activeSlot: 9,
+  const row1Mobile = computeGridTarget({
+    dims: mobileDims,
+    viewportWidth: 390,
+    viewportHeight: 844,
+    activeSlot: 3,
     activeCount: 12,
     mx: 0.5,
     my: 0.5,
     isHovered: false,
+    mobileStartY: 400,
   });
-  assert.ok(row0Compact.y - (compactDims.bh * row0Compact.s) / 2 >= 335);
-  assert.ok(row3Compact.y + (compactDims.bh * row3Compact.s) / 2 <= 667 - 70);
+  assert.ok(mobileDims.bw * row0Mobile.s >= 105);
+  assert.ok(row0Mobile.y - (mobileDims.bh * row0Mobile.s) / 2 >= 399);
+  assert.equal(row0Mobile.x, row1Mobile.x);
+  assert.ok(row1Mobile.y > row0Mobile.y);
 });

@@ -279,37 +279,63 @@ export interface GridTargetParams {
   mx: number;
   my: number;
   isHovered: boolean;
+  mobileStartY?: number;
+}
+
+export function getMobileGridMetrics(
+  viewportWidth: number,
+  dims: BookDimensions,
+  activeCount: number,
+  mobileStartY = 390,
+) {
+  const cols = 3;
+  const rows = Math.max(1, Math.ceil(activeCount / cols));
+  const targetBookWidth = Math.min(144, Math.max(96, viewportWidth * 0.29));
+  const baseScale = targetBookWidth / dims.bw;
+  const cellW = dims.bw * baseScale * 1.11;
+  const cellH = dims.bh * baseScale * 1.15;
+  const firstRowCenterY = mobileStartY + (dims.bh * baseScale) * 0.5;
+  const totalHeight = firstRowCenterY + (rows - 1) * cellH + (dims.bh * baseScale) * 0.5 + 104;
+  return { cols, rows, baseScale, cellW, cellH, firstRowCenterY, totalHeight };
 }
 
 export function computeGridTarget(params: GridTargetParams): BookPose {
-  const { dims, viewportWidth, viewportHeight, activeSlot, activeCount, mx, my, isHovered } =
-    params;
+  const {
+    dims,
+    viewportWidth,
+    viewportHeight,
+    activeSlot,
+    activeCount,
+    mx,
+    my,
+    isHovered,
+    mobileStartY = 390,
+  } = params;
 
-  const cols = dims.isMobile ? 3 : 6;
-  const rows = Math.max(1, Math.ceil(activeCount / cols));
-
+  let cols: number;
+  let rows: number;
   let baseScale: number;
   let cellW: number;
   let cellH: number;
-  let centerY: number;
+  let startY: number;
 
   if (dims.isMobile) {
-    const topBound = Math.max(336, viewportHeight * 0.42);
-    const bottomBound = viewportHeight - 74;
-    const availableH = Math.max(180, bottomBound - topBound);
-    const rowSpacing = 1.14;
-    const totalHeightUnits = (rows - 1) * rowSpacing + 1;
-    baseScale = Math.min(0.6, availableH / (totalHeightUnits * dims.bh));
-    cellW = dims.bw * baseScale * 1.15;
-    cellH = dims.bh * baseScale * rowSpacing;
-    const gridTotalH = (rows - 1) * cellH + dims.bh * baseScale;
-    centerY = topBound + Math.max(0, availableH - gridTotalH) * 0.5 + gridTotalH * 0.5;
+    const m = getMobileGridMetrics(viewportWidth, dims, activeCount, mobileStartY);
+    cols = m.cols;
+    rows = m.rows;
+    baseScale = m.baseScale;
+    cellW = m.cellW;
+    cellH = m.cellH;
+    startY = m.firstRowCenterY;
   } else {
+    cols = 6;
+    rows = Math.max(1, Math.ceil(activeCount / cols));
     const maxScaleByHeight = (0.22 * viewportHeight) / dims.bh;
     baseScale = Math.min(0.74, maxScaleByHeight);
     cellW = dims.bw * baseScale * 1.24;
     cellH = dims.bh * baseScale * 1.22;
-    centerY = viewportHeight * 0.68;
+    const centerY = viewportHeight * 0.68;
+    startY = centerY - ((rows - 1) * cellH) / 2;
   }
 
   const row = Math.floor(activeSlot / cols);
@@ -317,17 +343,16 @@ export function computeGridTarget(params: GridTargetParams): BookPose {
   const itemsInRow = row === rows - 1 ? activeCount - row * cols : cols;
 
   const startX = viewportWidth * 0.5 - ((itemsInRow - 1) * cellW) / 2;
-  const startY = centerY - ((rows - 1) * cellH) / 2;
 
-  const x = startX + col * cellW + (mx - 0.5) * -14;
-  const y = startY + row * cellH + (my - 0.5) * -10;
+  const x = startX + col * cellW + (mx - 0.5) * (dims.isMobile ? 0 : -14);
+  const y = startY + row * cellH + (my - 0.5) * (dims.isMobile ? 0 : -10);
 
   return {
     x,
     y,
     z: isHovered ? 55 : 0,
-    rx: (my - 0.5) * -10,
-    ry: (mx - 0.5) * 14,
+    rx: dims.isMobile ? 0 : (my - 0.5) * -10,
+    ry: dims.isMobile ? 0 : (mx - 0.5) * 14,
     rz: 0,
     s: isHovered ? baseScale * 1.08 : baseScale,
     o: 1,

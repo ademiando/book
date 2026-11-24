@@ -13,6 +13,7 @@ import {
   computeOrbitTarget,
   createBookSpringState,
   getBookDimensions,
+  getMobileGridMetrics,
   integrateBookSpring,
 } from '../lib/physics';
 
@@ -26,6 +27,7 @@ interface BookStageProps {
   onToggleSample: () => void;
   onCloseFocus: () => void;
   onThrowToast: () => void;
+  onMobileGridHeightChange?: (height: number | null) => void;
 }
 
 interface DragState {
@@ -52,6 +54,7 @@ export const BookStage: React.FC<BookStageProps> = ({
   onToggleSample,
   onCloseFocus,
   onThrowToast,
+  onMobileGridHeightChange,
 }) => {
   const stageRef = useRef<HTMLDivElement>(null);
   const bookElsRef = useRef<(HTMLButtonElement | null)[]>([]);
@@ -71,6 +74,7 @@ export const BookStage: React.FC<BookStageProps> = ({
     onToggleSample,
     onCloseFocus,
     onThrowToast,
+    onMobileGridHeightChange,
   });
   propsRef.current = {
     activeBookIndex,
@@ -81,6 +85,7 @@ export const BookStage: React.FC<BookStageProps> = ({
     onToggleSample,
     onCloseFocus,
     onThrowToast,
+    onMobileGridHeightChange,
   };
 
   const tiltsRef = useRef<number[]>(BOOKS.map((b) => b.baseTilt));
@@ -192,9 +197,14 @@ export const BookStage: React.FC<BookStageProps> = ({
       }
 
       if (drag.type === 'bg' && propsRef.current.activeBookIndex === null) {
-        phaseRef.current += dx * 0.0032;
-        phaseVRef.current = (dx / dtMs) * 0.16;
+        if (!(dimsRef.current.isMobile && propsRef.current.layoutMode === 'grid')) {
+          phaseRef.current += dx * 0.0032;
+          phaseVRef.current = (dx / dtMs) * 0.16;
+        }
       } else if (drag.type === 'book' && drag.moved) {
+        if (dimsRef.current.isMobile && propsRef.current.layoutMode === 'grid') {
+          return;
+        }
         const s = springsRef.current[drag.bookIndex];
         if (s) {
           s.p.x = e.clientX;
@@ -225,7 +235,7 @@ export const BookStage: React.FC<BookStageProps> = ({
           } else {
             propsRef.current.onOpenBook(drag.bookIndex);
           }
-        } else {
+        } else if (!(dimsRef.current.isMobile && propsRef.current.layoutMode === 'grid')) {
           const s = springsRef.current[drag.bookIndex];
           if (s) {
             // Pointer velocity in px/ms -> px/s scaled by *60 (approx frame-normalized velocity)
@@ -258,20 +268,51 @@ export const BookStage: React.FC<BookStageProps> = ({
     let rafId = 0;
     const startTime = performance.now();
     let prevTime = startTime;
+    let lastReportedGridH: number | null = null;
 
     const tick = (now: number) => {
       const dt = Math.min((now - prevTime) / 1000, 0.033);
       prevTime = now;
       const elapsed = (now - startTime) / 1000;
 
-      const { activeBookIndex: focusIdx, isSampleOpen: sampleOpen, layoutMode: mode, activeIndices: activeList } =
-        propsRef.current;
+      const {
+        activeBookIndex: focusIdx,
+        isSampleOpen: sampleOpen,
+        layoutMode: mode,
+        activeIndices: activeList,
+        onMobileGridHeightChange: reportHeight,
+      } = propsRef.current;
 
       const dims = dimsRef.current;
       const ring = ringRef.current;
       const w = window.innerWidth;
       const h = window.innerHeight;
       const ptr = pointerRef.current;
+
+      const isMobileGrid = dims.isMobile && mode === 'grid' && focusIdx === null;
+      let mobileStartY = 390;
+      if (isMobileGrid) {
+        const heroEl = document.querySelector<HTMLElement>('.hero-copy');
+        const heroBottom = heroEl ? heroEl.offsetTop + heroEl.offsetHeight : 410;
+        mobileStartY = Math.max(360, heroBottom + 10);
+        const m = getMobileGridMetrics(w, dims, activeList.length, mobileStartY);
+        const desiredH = Math.ceil(Math.max(h, m.totalHeight));
+        if (stageRef.current) {
+          stageRef.current.style.height = `${desiredH}px`;
+        }
+        if (lastReportedGridH === null || Math.abs(lastReportedGridH - desiredH) >= 2) {
+          lastReportedGridH = desiredH;
+          reportHeight?.(desiredH);
+        }
+      } else {
+        if (stageRef.current && stageRef.current.style.height) {
+          stageRef.current.style.height = '';
+        }
+        if (lastReportedGridH !== null) {
+          lastReportedGridH = null;
+          reportHeight?.(null);
+        }
+      }
 
       // Orbit drift & momentum decay (.93 per 60Hz frame)
       if (focusIdx === null && mode === 'orbit') {
@@ -339,6 +380,7 @@ export const BookStage: React.FC<BookStageProps> = ({
               mx: ptr.mx,
               my: ptr.my,
               isHovered: hoveredIdxRef.current === i && !isDragged,
+              mobileStartY,
             });
           } else {
             target = computeOrbitTarget({
@@ -421,12 +463,15 @@ export const BookStage: React.FC<BookStageProps> = ({
   const handleBookPointerDown = (bookIndex: number, e: React.PointerEvent<HTMLButtonElement>) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
     e.stopPropagation();
-    const el = bookElsRef.current[bookIndex];
-    el?.classList.add('is-dragging');
-    try {
-      el?.setPointerCapture(e.pointerId);
-    } catch {
-      // Ignore synthetic pointer events without active pointerId
+    const isMobileGrid = dimsRef.current.isMobile && propsRef.current.layoutMode === 'grid' && propsRef.current.activeBookIndex === null;
+    if (!isMobileGrid) {
+      const el = bookElsRef.current[bookIndex];
+      el?.classList.add('is-dragging');
+      try {
+        el?.setPointerCapture(e.pointerId);
+      } catch {
+        // Ignore synthetic pointer events without active pointerId
+      }
     }
     dragRef.current = {
       type: 'book',
