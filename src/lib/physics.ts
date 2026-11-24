@@ -287,19 +287,35 @@ export function computeGridTarget(params: GridTargetParams): BookPose {
 
   const cols = dims.isMobile ? 3 : 6;
   const rows = Math.max(1, Math.ceil(activeCount / cols));
-  const maxScaleByHeight = dims.isMobile
-    ? (0.122 * viewportHeight) / dims.bh
-    : (0.22 * viewportHeight) / dims.bh;
-  const baseScale = Math.min(dims.isMobile ? 0.62 : 0.74, maxScaleByHeight);
 
-  const cellW = dims.bw * baseScale * (dims.isMobile ? 1.15 : 1.24);
-  const cellH = dims.bh * baseScale * (dims.isMobile ? 1.14 : 1.22);
+  let baseScale: number;
+  let cellW: number;
+  let cellH: number;
+  let centerY: number;
+
+  if (dims.isMobile) {
+    const topBound = Math.max(336, viewportHeight * 0.42);
+    const bottomBound = viewportHeight - 74;
+    const availableH = Math.max(180, bottomBound - topBound);
+    const rowSpacing = 1.14;
+    const totalHeightUnits = (rows - 1) * rowSpacing + 1;
+    baseScale = Math.min(0.6, availableH / (totalHeightUnits * dims.bh));
+    cellW = dims.bw * baseScale * 1.15;
+    cellH = dims.bh * baseScale * rowSpacing;
+    const gridTotalH = (rows - 1) * cellH + dims.bh * baseScale;
+    centerY = topBound + Math.max(0, availableH - gridTotalH) * 0.5 + gridTotalH * 0.5;
+  } else {
+    const maxScaleByHeight = (0.22 * viewportHeight) / dims.bh;
+    baseScale = Math.min(0.74, maxScaleByHeight);
+    cellW = dims.bw * baseScale * 1.24;
+    cellH = dims.bh * baseScale * 1.22;
+    centerY = viewportHeight * 0.68;
+  }
 
   const row = Math.floor(activeSlot / cols);
   const col = activeSlot % cols;
   const itemsInRow = row === rows - 1 ? activeCount - row * cols : cols;
 
-  const centerY = dims.isMobile ? viewportHeight * 0.64 : viewportHeight * 0.68;
   const startX = viewportWidth * 0.5 - ((itemsInRow - 1) * cellW) / 2;
   const startY = centerY - ((rows - 1) * cellH) / 2;
 

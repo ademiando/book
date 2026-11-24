@@ -163,4 +163,29 @@ test('grid and focus targets compute valid bounds on desktop and mobile', () => 
   const mobileDims = getBookDimensions(390);
   assert.equal(mobileDims.isMobile, true);
   assert.ok(mobileDims.bw <= 140);
+
+  // Verify mobile grid never overlaps search/hero top or bottom switch even on compact 375x667 screens
+  const compactDims = getBookDimensions(375);
+  const row0Compact = computeGridTarget({
+    dims: compactDims,
+    viewportWidth: 375,
+    viewportHeight: 667,
+    activeSlot: 0,
+    activeCount: 12,
+    mx: 0.5,
+    my: 0.5,
+    isHovered: false,
+  });
+  const row3Compact = computeGridTarget({
+    dims: compactDims,
+    viewportWidth: 375,
+    viewportHeight: 667,
+    activeSlot: 9,
+    activeCount: 12,
+    mx: 0.5,
+    my: 0.5,
+    isHovered: false,
+  });
+  assert.ok(row0Compact.y - (compactDims.bh * row0Compact.s) / 2 >= 335);
+  assert.ok(row3Compact.y + (compactDims.bh * row3Compact.s) / 2 <= 667 - 70);
 });

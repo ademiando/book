@@ -559,6 +559,6 @@ body.focus .corners-bottom * {
   }
 
   body.grid-mode .hero-copy-inner {
-    transform: translateY(-23vh) scale(0.56);
+    transform: translateY(calc(-50vh + 226px)) scale(0.54);
   }
 }
