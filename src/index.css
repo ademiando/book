@@ -620,4 +620,8 @@ body.focus .corners-bottom * {
   body.mobile-grid-scroll .headline-text {
     font-size: clamp(32px, 9.2vw, 44px);
   }
+
+  body.mobile-grid-scroll .corners-bottom {
+    position: absolute;
+  }
 }

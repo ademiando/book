@@ -331,7 +331,7 @@ export function getMobileGridMetrics(
   const cellW = dims.bw * baseScale * 1.11;
   const cellH = dims.bh * baseScale * 1.15;
   const firstRowCenterY = mobileStartY + (dims.bh * baseScale) * 0.5;
-  const totalHeight = firstRowCenterY + (rows - 1) * cellH + (dims.bh * baseScale) * 0.5 + 104;
+  const totalHeight = firstRowCenterY + (rows - 1) * cellH + (dims.bh * baseScale) * 0.5 + 124;
   return { cols, rows, baseScale, cellW, cellH, firstRowCenterY, totalHeight };
 }
 
