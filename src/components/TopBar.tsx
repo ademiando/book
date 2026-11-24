@@ -131,15 +131,15 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <header className="top-bar fixed inset-x-0 top-0 z-30 pointer-events-none px-4 pt-4 md:px-7 md:pt-5 transition-opacity duration-300">
+    <header className="top-bar fixed inset-x-0 top-0 z-30 pointer-events-none px-4 pt-4 md:px-7 md:pt-5 transition-opacity duration-500">
       <div className="relative flex items-start justify-between gap-4">
         {/* Left: Counter (hidden on <760px) */}
-        <div className="top-bar-fade hidden md:flex items-center pt-1.5 text-[12.5px] font-medium tracking-[-0.01em] text-[#86827a] tabular-nums pointer-events-auto select-none transition-opacity duration-300 w-[210px]">
+        <div className="top-bar-fade hidden md:flex items-center pt-1.5 text-[12.5px] font-medium tracking-[-0.01em] text-[#86827a] tabular-nums pointer-events-auto select-none transition-opacity duration-500 w-[210px]">
           2,400 books · 186 curators
         </div>
 
         {/* Center: Stacked Wordmark + Pill Search Bar */}
-        <div className="top-bar-fade flex flex-col items-center gap-2.5 mx-auto pointer-events-auto transition-opacity duration-300 w-full md:w-auto">
+        <div className="top-bar-fade flex flex-col items-center gap-2.5 mx-auto pointer-events-auto transition-opacity duration-500 w-full md:w-auto">
           <button
             type="button"
             onClick={onResetHome}

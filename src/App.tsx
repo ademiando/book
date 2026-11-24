@@ -94,7 +94,7 @@ export default function App() {
     setIsSampleOpen(false);
     openTimerRef.current = window.setTimeout(() => {
       setIsSampleOpen(true);
-    }, 650);
+    }, 880);
   }, []);
 
   const closeFocus = useCallback(() => {
@@ -131,7 +131,7 @@ export default function App() {
       launchFlyToShelfAnimation(book, sourceEl, shelfBadgeRef.current);
       window.setTimeout(() => {
         setShelfBumpKey((k) => k + 1);
-      }, 780);
+      }, 980);
       showToast(`Added “${book.title}” to your shelf`);
     },
     [showToast],
@@ -232,7 +232,7 @@ export default function App() {
       />
 
       {/* Bottom Corners: Hints (desktop only) & Orbit/Grid Switch */}
-      <div className="corners-bottom fixed inset-x-0 bottom-0 z-30 pointer-events-none px-4 pb-4 md:px-7 md:pb-6 flex items-center justify-center md:justify-between transition-opacity duration-300">
+      <div className="corners-bottom fixed inset-x-0 bottom-0 z-30 pointer-events-none px-4 pb-4 md:px-7 md:pb-6 flex items-center justify-center md:justify-between transition-opacity duration-500">
         <div className="hidden md:block text-[12px] text-[#86827a] tracking-[-0.01em] pointer-events-auto">
           Drag to throw · Scroll to spin · Click to open
         </div>
@@ -246,7 +246,7 @@ export default function App() {
             type="button"
             aria-pressed={layoutMode === 'orbit'}
             onClick={() => setLayoutMode('orbit')}
-            className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium transition-colors duration-300 cursor-pointer whitespace-nowrap ${
               layoutMode === 'orbit'
                 ? 'bg-[#141414] text-[#f4f1ea]'
                 : 'text-[#86827a] hover:text-[#141414]'
@@ -258,7 +258,7 @@ export default function App() {
             type="button"
             aria-pressed={layoutMode === 'grid'}
             onClick={() => setLayoutMode('grid')}
-            className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium transition-colors cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium transition-colors duration-300 cursor-pointer whitespace-nowrap ${
               layoutMode === 'grid'
                 ? 'bg-[#141414] text-[#f4f1ea]'
                 : 'text-[#86827a] hover:text-[#141414]'
@@ -273,7 +273,7 @@ export default function App() {
       <div
         role="status"
         aria-live="polite"
-        className={`fixed left-1/2 -translate-x-1/2 bottom-16 md:bottom-7 z-50 pointer-events-none px-4 py-2 rounded-full bg-[#141414] text-[#f4f1ea] text-[12.5px] font-medium shadow-[0_10px_28px_rgba(20,20,20,0.22)] transition-all duration-300 whitespace-nowrap ${
+        className={`fixed left-1/2 -translate-x-1/2 bottom-16 md:bottom-7 z-50 pointer-events-none px-4 py-2 rounded-full bg-[#141414] text-[#f4f1ea] text-[12.5px] font-medium shadow-[0_10px_28px_rgba(20,20,20,0.22)] transition-all duration-500 whitespace-nowrap ${
           toast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}
       >

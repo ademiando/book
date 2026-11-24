@@ -5,7 +5,7 @@
   --ink: #141414;
   --mute: #86827a;
   --line: rgba(20, 20, 20, 0.1);
-  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --spring: cubic-bezier(0.22, 1.28, 0.36, 1);
   --out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -444,8 +444,8 @@ body::before {
   align-items: center;
   text-align: center;
   transition:
-    transform 0.75s var(--out),
-    opacity 0.4s var(--out);
+    transform 1.05s var(--out),
+    opacity 0.65s var(--out);
   transform-origin: center center;
 }
 
@@ -485,8 +485,8 @@ body.focus .corners-bottom * {
 .cta-pill {
   height: 46px;
   transition:
-    transform 0.25s var(--spring),
-    background-color 0.2s ease;
+    transform 0.45s var(--spring),
+    background-color 0.35s ease;
 }
 
 .cta-pill:hover {
@@ -498,37 +498,37 @@ body.focus .corners-bottom * {
 }
 
 .cta-arrow {
-  transition: transform 0.28s var(--spring);
+  transition: transform 0.45s var(--spring);
 }
 
 /* Focus Panel staggered children */
 .focus-stagger > * {
-  animation: focusFadeUp 0.55s var(--out) both;
+  animation: focusFadeUp 0.85s var(--out) both;
 }
 
 .focus-stagger > *:nth-child(1) {
-  animation-delay: 0.06s;
+  animation-delay: 0.12s;
 }
 .focus-stagger > *:nth-child(2) {
-  animation-delay: 0.11s;
+  animation-delay: 0.2s;
 }
 .focus-stagger > *:nth-child(3) {
-  animation-delay: 0.16s;
+  animation-delay: 0.28s;
 }
 .focus-stagger > *:nth-child(4) {
-  animation-delay: 0.21s;
+  animation-delay: 0.36s;
 }
 .focus-stagger > *:nth-child(5) {
-  animation-delay: 0.26s;
+  animation-delay: 0.44s;
 }
 .focus-stagger > *:nth-child(6) {
-  animation-delay: 0.31s;
+  animation-delay: 0.52s;
 }
 
 @keyframes focusFadeUp {
   from {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(18px);
   }
   to {
     opacity: 1;
@@ -549,7 +549,7 @@ body.focus .corners-bottom * {
 }
 
 .shelf-bump {
-  animation: shelfBump 0.42s var(--spring);
+  animation: shelfBump 0.65s var(--spring);
 }
 
 .no-scrollbar::-webkit-scrollbar {

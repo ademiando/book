@@ -7,6 +7,11 @@ export interface BookSpringState {
   v: BookPose;
 }
 
+export interface SpringConfig {
+  stiffness: Record<SpringProp, number>;
+  damping: Record<SpringProp, number>;
+}
+
 export const SPRING_STIFFNESS: Record<SpringProp, number> = {
   x: 120,
   y: 120,
@@ -29,6 +34,36 @@ export const SPRING_DAMPING: Record<SpringProp, number> = {
   s: 21,
   o: 19,
   open: 20,
+};
+
+export const DEFAULT_SPRING: SpringConfig = {
+  stiffness: SPRING_STIFFNESS,
+  damping: SPRING_DAMPING,
+};
+
+export const MORPH_SPRING: SpringConfig = {
+  stiffness: {
+    x: 54,
+    y: 54,
+    z: 62,
+    rx: 72,
+    ry: 72,
+    rz: 52,
+    s: 68,
+    o: 44,
+    open: 46,
+  },
+  damping: {
+    x: 11.2,
+    y: 11.2,
+    z: 11.8,
+    rx: 12.2,
+    ry: 12.2,
+    rz: 10.2,
+    s: 12.4,
+    o: 12.5,
+    open: 10.4,
+  },
 };
 
 const SPRING_PROPS: readonly SpringProp[] = [
@@ -54,6 +89,7 @@ export function integrateBookSpring(
   state: BookSpringState,
   target: BookPose,
   dtRaw: number,
+  config: SpringConfig = DEFAULT_SPRING,
 ): void {
   const dt = Math.min(Math.max(dtRaw, 0), 0.033);
   if (dt === 0) return;
@@ -64,8 +100,8 @@ export function integrateBookSpring(
   for (let step = 0; step < substeps; step += 1) {
     for (let i = 0; i < SPRING_PROPS.length; i += 1) {
       const prop = SPRING_PROPS[i];
-      const k = SPRING_STIFFNESS[prop];
-      const c = SPRING_DAMPING[prop];
+      const k = config.stiffness[prop];
+      const c = config.damping[prop];
       const disp = state.p[prop] - target[prop];
       const acc = -k * disp - c * state.v[prop];
       state.v[prop] += acc * h;

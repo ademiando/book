@@ -4,6 +4,8 @@ import {
   BookDimensions,
   BookPose,
   BookSpringState,
+  DEFAULT_SPRING,
+  MORPH_SPRING,
   RingTable,
   buildRingTable,
   computeFocusBookTarget,
@@ -99,15 +101,17 @@ export const BookStage: React.FC<BookStageProps> = ({
   const dragRef = useRef<DragState | null>(null);
   const prevLayoutRef = useRef<'orbit' | 'grid'>(layoutMode);
   const prevShuffleRef = useRef<number>(shuffleNonce);
+  const layoutTransitionUntilRef = useRef<number>(0);
 
-  // Kick book velocities on Orbit <-> Grid toggle
+  // Kick book velocities on Orbit <-> Grid toggle and engage smooth slow morph spring
   useEffect(() => {
     if (prevLayoutRef.current !== layoutMode) {
       prevLayoutRef.current = layoutMode;
+      layoutTransitionUntilRef.current = performance.now() + 2600;
       for (let i = 0; i < springsRef.current.length; i += 1) {
         const s = springsRef.current[i];
-        s.v.rz += (Math.random() - 0.5) * 260;
-        s.v.z += 160 + Math.random() * 140;
+        s.v.rz += (Math.random() - 0.5) * 180;
+        s.v.z += 120 + Math.random() * 110;
       }
     }
   }, [layoutMode]);
@@ -323,6 +327,9 @@ export const BookStage: React.FC<BookStageProps> = ({
         }
       }
 
+      const activeSpringConfig =
+        now < layoutTransitionUntilRef.current ? MORPH_SPRING : DEFAULT_SPRING;
+
       const activeSlotMap = new Map<number, number>();
       for (let k = 0; k < activeList.length; k += 1) {
         activeSlotMap.set(activeList[k], k);
@@ -406,7 +413,7 @@ export const BookStage: React.FC<BookStageProps> = ({
         }
 
         if (!isDragged) {
-          integrateBookSpring(state, target, dt);
+          integrateBookSpring(state, target, dt, activeSpringConfig);
         }
 
         const p = state.p;
@@ -629,7 +636,7 @@ export const BookStage: React.FC<BookStageProps> = ({
       <div
         ref={tooltipRef}
         aria-hidden="true"
-        className={`fixed left-0 top-0 z-50 pointer-events-none px-3 py-1.5 rounded-full bg-[#141414] text-[#f4f1ea] shadow-[0_8px_20px_rgba(20,20,20,0.22)] text-[12px] whitespace-nowrap transition-opacity duration-150 ${
+        className={`fixed left-0 top-0 z-50 pointer-events-none px-3 py-1.5 rounded-full bg-[#141414] text-[#f4f1ea] shadow-[0_8px_20px_rgba(20,20,20,0.22)] text-[12px] whitespace-nowrap transition-opacity duration-300 ${
           hoveredBook && activeBookIndex === null ? 'opacity-100' : 'opacity-0'
         }`}
       >

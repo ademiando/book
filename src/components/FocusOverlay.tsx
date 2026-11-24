@@ -210,12 +210,12 @@ export function launchFlyToShelfAnimation(
   const ctrlX = (startX + endX) * 0.5 + 80;
   const ctrlY = Math.min(startY, endY) - 140;
 
-  const duration = 900;
+  const duration = 1150;
   const start = performance.now();
 
   const step = (now: number) => {
     const t = Math.min(1, (now - start) / duration);
-    const ease = 1 - Math.pow(1 - t, 3);
+    const ease = 1 - Math.pow(1 - t, 3.4);
     const inv = 1 - ease;
 
     const x = inv * inv * startX + 2 * inv * ease * ctrlX + ease * ease * endX;

@@ -117,7 +117,7 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => onToggleCategory(category)}
-                  className={`inline-flex items-center shrink-0 rounded-full font-medium border transition-colors cursor-pointer whitespace-nowrap ${
+                  className={`inline-flex items-center shrink-0 rounded-full font-medium border transition-all duration-300 cursor-pointer whitespace-nowrap ${
                     layoutMode === 'grid'
                       ? 'gap-1 md:gap-1.5 h-8 px-2.5 md:px-3 text-[11px] md:text-[12px]'
                       : 'gap-1.5 h-7 md:h-8 px-2.5 md:px-3 text-[11px] md:text-[12px]'

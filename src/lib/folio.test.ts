@@ -10,6 +10,7 @@ import {
   matchesQuery,
 } from './books';
 import {
+  MORPH_SPRING,
   buildRingTable,
   computeFocusBookTarget,
   computeGridTarget,
@@ -101,6 +102,23 @@ test('spring integration converges smoothly to target pose', () => {
   assert.ok(Math.abs(state.p.x - target.x) < 0.5);
   assert.ok(Math.abs(state.p.y - target.y) < 0.5);
   assert.ok(Math.abs(state.p.open - target.open) < 0.01);
+
+  const morphState = createBookSpringState({
+    x: 0,
+    y: 0,
+    z: 0,
+    rx: 0,
+    ry: 0,
+    rz: 0,
+    s: 1,
+    o: 1,
+    open: 0,
+  });
+  for (let frame = 0; frame < 180; frame += 1) {
+    integrateBookSpring(morphState, target, 1 / 60, MORPH_SPRING);
+  }
+  assert.ok(Math.abs(morphState.p.x - target.x) < 0.5);
+  assert.ok(Math.abs(morphState.p.y - target.y) < 0.5);
 });
 
 test('top clearance lifts and shrinks books crossing top center', () => {
