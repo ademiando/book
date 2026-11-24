@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
 import { Book, getBookCoverUrl } from '../lib/books';
+import { CopyrightLabel, SocialIcons } from './MinimalFooter';
 
 interface FocusOverlayProps {
   book: Book | null;
@@ -76,7 +77,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
       {/* Side panel (left 57% on desktop; bottom sheet on <760px without note) */}
       <aside
         key={book.id}
-        className="pointer-events-auto fixed left-5 right-5 bottom-16 md:bottom-auto md:right-8 md:left-[57%] md:top-1/2 md:-translate-y-1/2 max-w-[440px] focus-stagger"
+        className="pointer-events-auto fixed left-5 right-5 bottom-24 md:bottom-auto md:right-8 md:left-[57%] md:top-1/2 md:-translate-y-1/2 max-w-[440px] focus-stagger"
       >
         <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
           {book.category} · {book.year}
@@ -141,24 +142,33 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
         </div>
       </aside>
 
-      {/* Bottom-center prev / next arrows */}
-      <div className="pointer-events-auto fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onPrev}
-          aria-label="Previous book"
-          className="w-10 h-10 rounded-full border border-[rgba(20,20,20,0.12)] bg-[#fbfaf6]/90 backdrop-blur-md text-[#141414] inline-flex items-center justify-center hover:border-[#141414] transition-colors cursor-pointer shadow-sm"
-        >
-          <ArrowLeft className="w-4 h-4" />
-        </button>
-        <button
-          type="button"
-          onClick={onNext}
-          aria-label="Next book"
-          className="w-10 h-10 rounded-full border border-[rgba(20,20,20,0.12)] bg-[#fbfaf6]/90 backdrop-blur-md text-[#141414] inline-flex items-center justify-center hover:border-[#141414] transition-colors cursor-pointer shadow-sm"
-        >
-          <ArrowRight className="w-4 h-4" />
-        </button>
+      {/* Bottom row: Prev/Next arrows + thin copyright footer & monochrome social icons */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 px-4 pb-3.5 md:px-7 md:pb-6 flex flex-col items-center gap-2 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-4">
+        <div className="pointer-events-auto order-2 md:order-1 w-full md:w-auto flex items-center justify-between md:justify-start md:justify-self-start">
+          <CopyrightLabel />
+          <SocialIcons className="md:hidden" />
+        </div>
+
+        <div className="pointer-events-auto order-1 md:order-2 md:justify-self-center flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onPrev}
+            aria-label="Previous book"
+            className="w-10 h-10 rounded-full border border-[rgba(20,20,20,0.12)] bg-[#fbfaf6]/90 backdrop-blur-md text-[#141414] inline-flex items-center justify-center hover:border-[#141414] transition-colors cursor-pointer shadow-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            aria-label="Next book"
+            className="w-10 h-10 rounded-full border border-[rgba(20,20,20,0.12)] bg-[#fbfaf6]/90 backdrop-blur-md text-[#141414] inline-flex items-center justify-center hover:border-[#141414] transition-colors cursor-pointer shadow-sm"
+          >
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        <SocialIcons className="hidden md:flex md:order-3 md:justify-self-end pointer-events-auto" />
       </div>
     </div>
   );
