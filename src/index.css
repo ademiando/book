@@ -444,7 +444,7 @@ body::before {
   align-items: center;
   text-align: center;
   transition:
-    transform 1.05s var(--out),
+    transform 1.35s var(--out),
     opacity 0.65s var(--out);
   transform-origin: center center;
 }

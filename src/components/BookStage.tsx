@@ -107,11 +107,11 @@ export const BookStage: React.FC<BookStageProps> = ({
   useEffect(() => {
     if (prevLayoutRef.current !== layoutMode) {
       prevLayoutRef.current = layoutMode;
-      layoutTransitionUntilRef.current = performance.now() + 2600;
+      layoutTransitionUntilRef.current = performance.now() + 3400;
       for (let i = 0; i < springsRef.current.length; i += 1) {
         const s = springsRef.current[i];
-        s.v.rz += (Math.random() - 0.5) * 180;
-        s.v.z += 120 + Math.random() * 110;
+        s.v.rz += (Math.random() - 0.5) * 140;
+        s.v.z += 110 + Math.random() * 90;
       }
     }
   }, [layoutMode]);
