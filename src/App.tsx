@@ -133,7 +133,7 @@ export default function App() {
       window.setTimeout(() => {
         setShelfBumpKey((k) => k + 1);
       }, 980);
-      showToast(`Added “${book.title}” to your shelf`);
+      showToast(`Added “${book.title}” to your collection`);
     },
     [showToast],
   );
@@ -289,11 +289,11 @@ export default function App() {
         )}
       </div>
 
-      {/* Centered Toast Pill */}
+      {/* Centered Text-Only Toast Notification */}
       <div
         role="status"
         aria-live="polite"
-        className={`fixed left-1/2 -translate-x-1/2 bottom-16 md:bottom-7 z-50 pointer-events-none px-4 py-2 rounded-full bg-[#141414] text-[#f4f1ea] text-[12.5px] font-medium shadow-[0_10px_28px_rgba(20,20,20,0.22)] transition-all duration-500 whitespace-nowrap ${
+        className={`fixed left-1/2 -translate-x-1/2 bottom-[72px] md:bottom-[74px] z-50 pointer-events-none text-[#141414]/85 text-[12.5px] font-medium tracking-[-0.01em] transition-all duration-500 whitespace-nowrap ${
           toast ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
         }`}
       >

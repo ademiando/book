@@ -33,15 +33,15 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
   const backBook = BOOKS[(Math.floor(flipCount / 2) * 2 + 1) % BOOKS.length];
 
   return (
-    <section className="hero-copy" aria-label="Folio Room overview">
+    <section className="hero-copy" aria-label="The Atelier overview">
       <div className="hero-copy-inner max-w-[272px] md:max-w-[780px]">
         <h1 className="headline-text m-0">
           <span className="line-mask">
-            <span className="line-rise">One Shelf for</span>
+            <span className="line-rise">Every Idea is</span>
           </span>
           <span className="line-mask">
             <span className="line-rise line-rise-2">
-              Every
+              Art of
               <button
                 type="button"
                 onClick={onShuffleRing}
@@ -75,7 +75,7 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
                   </span>
                 </span>
               </button>
-              Curious Mind.
+              the Mind.
             </span>
           </span>
         </h1>
@@ -87,7 +87,7 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
               : 'text-[13.5px] md:text-[17px] max-w-[240px] md:max-w-[440px]'
           }`}
         >
-          A digital library of design books for curious creatives.
+          A digital studio of ideas, code, and written reflections.
         </p>
 
         <div className="mt-5 md:mt-7 flex flex-col items-center gap-3 md:gap-3.5 pointer-events-auto w-full">

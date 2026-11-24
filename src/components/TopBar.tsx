@@ -143,7 +143,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           <button
             type="button"
             onClick={onResetHome}
-            aria-label="Folio Room home"
+            aria-label="The Atelier home"
             className="text-center cursor-pointer bg-transparent border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414] rounded-sm"
             style={{
               fontFamily: "'Inter Tight', sans-serif",
@@ -154,8 +154,8 @@ export const TopBar: React.FC<TopBarProps> = ({
               color: '#141414',
             }}
           >
-            <span className="block">Folio</span>
-            <span className="block">Room</span>
+            <span className="block">The</span>
+            <span className="block">Atelier</span>
           </button>
 
           <div ref={searchWrapRef} className="relative w-[min(304px,calc(100vw-32px))] md:w-[340px]">
@@ -171,8 +171,8 @@ export const TopBar: React.FC<TopBarProps> = ({
                   setSearchFocused(true);
                 }}
                 onKeyDown={handleSearchKeyDown}
-                placeholder="Search 2,400 design books"
-                aria-label="Search 2,400 design books"
+                placeholder="Search ideas..."
+                aria-label="Search ideas..."
                 className="w-full bg-transparent text-[13px] text-[#141414] placeholder:text-[#141414]/55 focus:outline-none [&::-webkit-search-cancel-button]:hidden"
               />
               {query ? (
@@ -251,7 +251,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           </div>
         </div>
 
-        {/* Right: My Shelf Pill */}
+        {/* Right: My Collection Pill */}
         <div
           ref={shelfWrapRef}
           className="pointer-events-auto shrink-0 absolute right-0 top-0 md:static md:w-[210px] flex justify-end"
@@ -260,11 +260,11 @@ export const TopBar: React.FC<TopBarProps> = ({
             type="button"
             onClick={() => setShelfOpen((o) => !o)}
             aria-expanded={shelfOpen}
-            aria-label={`My Shelf, ${shelfIds.length} saved books`}
-            className="water-droplet water-droplet-delay-2 inline-flex items-center gap-2 h-9 px-3.5 text-[12.5px] font-medium text-[#141414] cursor-pointer whitespace-nowrap"
+            aria-label={`My Collection, ${shelfIds.length} saved items`}
+            className="water-droplet water-droplet-delay-2 inline-flex items-center gap-1.5 md:gap-2 h-8 md:h-9 px-2.5 md:px-3.5 text-[11px] md:text-[12.5px] font-medium text-[#141414] cursor-pointer whitespace-nowrap"
           >
             <Bookmark className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>My Shelf</span>
+            <span>My Collection</span>
             <span
               key={shelfBumpKey}
               ref={shelfBadgeRef}
@@ -281,12 +281,12 @@ export const TopBar: React.FC<TopBarProps> = ({
           {shelfOpen && (
             <div className="absolute right-0 top-[calc(100%+8px)] w-[272px] rounded-2xl border border-[rgba(20,20,20,0.1)] bg-[#fbfaf6]/95 backdrop-blur-md shadow-[0_18px_40px_rgba(20,20,20,0.14)] p-2 z-50">
               <div className="px-2.5 py-1.5 text-[11px] font-medium text-[#86827a] border-b border-[rgba(20,20,20,0.08)] flex items-center justify-between">
-                <span>Saved to Shelf</span>
+                <span>Saved to Collection</span>
                 <span className="tabular-nums">{savedBooks.length}</span>
               </div>
               {savedBooks.length === 0 ? (
                 <div className="px-3 py-6 text-center text-[12.5px] text-[#86827a] leading-relaxed">
-                  No books saved yet. Open any book and choose “Add to shelf”.
+                  No works saved yet. Open any work and choose “Add to collection”.
                 </div>
               ) : (
                 <div className="mt-1.5 max-h-[280px] overflow-y-auto space-y-1">

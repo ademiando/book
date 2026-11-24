@@ -94,7 +94,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
 
         <div className="mt-4 md:mt-6 py-3 border-y border-[rgba(20,20,20,0.1)] grid grid-cols-3 gap-3 text-[12px] tabular-nums">
           <div>
-            <span className="block text-[#86827a] text-[11px]">Pages</span>
+            <span className="block text-[#86827a] text-[11px]">Format</span>
             <span className="font-medium text-[#141414]">{book.pages}</span>
           </div>
           <div>
@@ -102,7 +102,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
             <span className="font-medium text-[#141414]">Hardcover · {book.year}</span>
           </div>
           <div>
-            <span className="block text-[#86827a] text-[11px]">Curator score</span>
+            <span className="block text-[#86827a] text-[11px]">Series</span>
             <span className="font-medium text-[#141414]">{book.score.toFixed(1)} / 5</span>
           </div>
         </div>
@@ -118,7 +118,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
             onClick={onToggleSample}
             className="h-11 px-5 rounded-full bg-[#141414] text-[#f4f1ea] text-[13px] font-medium hover:bg-[#2a2a2a] transition-colors cursor-pointer whitespace-nowrap"
           >
-            {isSampleOpen ? 'Close sample' : 'Read sample'}
+            {isSampleOpen ? 'Close excerpt' : 'Read excerpt'}
           </button>
 
           <button
@@ -132,11 +132,11 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
           >
             {isOnShelf ? (
               <>
-                <span>On your shelf</span>
+                <span>In your collection</span>
                 <Check className="w-3.5 h-3.5" aria-hidden="true" />
               </>
             ) : (
-              <span>Add to shelf</span>
+              <span>Add to collection</span>
             )}
           </button>
         </div>
