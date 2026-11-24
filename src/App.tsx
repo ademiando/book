@@ -254,7 +254,7 @@ export default function App() {
         <div
           role="group"
           aria-label="Layout mode"
-          className={`pointer-events-auto inline-flex items-center p-1 rounded-full border border-[rgba(20,20,20,0.1)] bg-[#fbfaf6]/85 backdrop-blur-md shadow-[0_2px_12px_rgba(20,20,20,0.05)] ${
+          className={`water-droplet pointer-events-auto inline-flex items-center p-1 ${
             layoutMode === 'grid' ? 'order-1 md:order-2 md:justify-self-center' : ''
           }`}
         >
@@ -262,10 +262,10 @@ export default function App() {
             type="button"
             aria-pressed={layoutMode === 'orbit'}
             onClick={() => setLayoutMode('orbit')}
-            className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium transition-colors duration-300 cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium transition-all duration-300 cursor-pointer whitespace-nowrap ${
               layoutMode === 'orbit'
-                ? 'bg-[#141414] text-[#f4f1ea]'
-                : 'text-[#86827a] hover:text-[#141414]'
+                ? 'bg-[#141414] text-[#f4f1ea] shadow-sm'
+                : 'text-[#141414]/75 hover:text-[#141414]'
             }`}
           >
             Orbit
@@ -274,10 +274,10 @@ export default function App() {
             type="button"
             aria-pressed={layoutMode === 'grid'}
             onClick={() => setLayoutMode('grid')}
-            className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium transition-colors duration-300 cursor-pointer whitespace-nowrap ${
+            className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium transition-all duration-300 cursor-pointer whitespace-nowrap ${
               layoutMode === 'grid'
-                ? 'bg-[#141414] text-[#f4f1ea]'
-                : 'text-[#86827a] hover:text-[#141414]'
+                ? 'bg-[#141414] text-[#f4f1ea] shadow-sm'
+                : 'text-[#141414]/75 hover:text-[#141414]'
             }`}
           >
             Grid

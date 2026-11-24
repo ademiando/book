@@ -159,15 +159,8 @@ export const TopBar: React.FC<TopBarProps> = ({
           </button>
 
           <div ref={searchWrapRef} className="relative w-[min(304px,calc(100vw-32px))] md:w-[340px]">
-            <div
-              className="flex items-center gap-2.5 h-10 px-3.5 rounded-full border border-[rgba(20,20,20,0.1)] shadow-[0_2px_12px_rgba(20,20,20,0.04)] transition-shadow focus-within:border-[rgba(20,20,20,0.28)] focus-within:shadow-[0_6px_22px_rgba(20,20,20,0.08)]"
-              style={{
-                backgroundColor: 'rgba(251, 250, 246, 0.86)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-              }}
-            >
-              <Search className="w-3.5 h-3.5 text-[#86827a] shrink-0" aria-hidden="true" />
+            <div className="water-droplet water-droplet-delay-1 flex items-center gap-2.5 h-10 px-3.5">
+              <Search className="w-3.5 h-3.5 text-[#141414]/65 shrink-0" aria-hidden="true" />
               <input
                 ref={inputRef}
                 type="search"
@@ -180,7 +173,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 onKeyDown={handleSearchKeyDown}
                 placeholder="Search 2,400 design books"
                 aria-label="Search 2,400 design books"
-                className="w-full bg-transparent text-[13px] text-[#141414] placeholder:text-[#86827a] focus:outline-none [&::-webkit-search-cancel-button]:hidden"
+                className="w-full bg-transparent text-[13px] text-[#141414] placeholder:text-[#141414]/55 focus:outline-none [&::-webkit-search-cancel-button]:hidden"
               />
               {query ? (
                 <button
@@ -190,12 +183,12 @@ export const TopBar: React.FC<TopBarProps> = ({
                     inputRef.current?.focus();
                   }}
                   aria-label="Clear search"
-                  className="p-1 rounded-full text-[#86827a] hover:text-[#141414] transition-colors shrink-0 cursor-pointer"
+                  className="p-1 rounded-full text-[#141414]/65 hover:text-[#141414] transition-colors shrink-0 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
               ) : (
-                <kbd className="hidden sm:inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-medium text-[#86827a] border border-[rgba(20,20,20,0.12)] rounded-[6px] bg-white/50 shrink-0">
+                <kbd className="hidden sm:inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[11px] font-medium text-[#141414]/65 border border-[rgba(20,20,20,0.16)] rounded-[6px] bg-black/[0.04] shrink-0">
                   /
                 </kbd>
               )}
@@ -268,7 +261,7 @@ export const TopBar: React.FC<TopBarProps> = ({
             onClick={() => setShelfOpen((o) => !o)}
             aria-expanded={shelfOpen}
             aria-label={`My Shelf, ${shelfIds.length} saved books`}
-            className="inline-flex items-center gap-2 h-9 px-3.5 rounded-full border border-[rgba(20,20,20,0.1)] bg-[#fbfaf6]/85 backdrop-blur-md text-[12.5px] font-medium text-[#141414] shadow-[0_2px_10px_rgba(20,20,20,0.04)] hover:border-[rgba(20,20,20,0.25)] transition-colors cursor-pointer whitespace-nowrap"
+            className="water-droplet water-droplet-delay-2 inline-flex items-center gap-2 h-9 px-3.5 text-[12.5px] font-medium text-[#141414] cursor-pointer whitespace-nowrap"
           >
             <Bookmark className="w-3.5 h-3.5" aria-hidden="true" />
             <span>My Shelf</span>
@@ -278,7 +271,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               className={`inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[11px] font-semibold tabular-nums transition-colors ${
                 shelfIds.length > 0
                   ? 'bg-[#141414] text-[#f4f1ea]'
-                  : 'bg-[rgba(20,20,20,0.08)] text-[#86827a]'
+                  : 'bg-[rgba(20,20,20,0.12)] text-[#141414]/75'
               } ${shelfBumpKey > 0 ? 'shelf-bump' : ''}`}
             >
               {shelfIds.length}
