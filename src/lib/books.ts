@@ -1,4 +1,4 @@
-export type Category = 'Typography' | 'Branding' | 'Posters' | 'Layout';
+export type Category = 'Web' | 'Motion' | 'Editions' | 'Systems';
 
 export interface Book {
   index: number;
@@ -18,10 +18,10 @@ export interface Book {
 }
 
 export const CATEGORIES: readonly Category[] = [
-  'Typography',
-  'Branding',
-  'Posters',
-  'Layout',
+  'Web',
+  'Motion',
+  'Editions',
+  'Systems',
 ] as const;
 
 const RAW_BOOKS: Array<{
@@ -42,7 +42,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033327_214ed3f3-b77e-440f-aba1-a8f6bfef39e1',
     title: 'GRID',
     author: 'Ines Vahl',
-    category: 'Layout',
+    category: 'Systems',
     pages: 248,
     year: 2023,
     score: 4.9,
@@ -56,7 +56,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033326_84bf819c-5088-4118-894d-254c41530560',
     title: 'LOUD',
     author: 'Marco Teller',
-    category: 'Posters',
+    category: 'Editions',
     pages: 192,
     year: 2024,
     score: 4.7,
@@ -70,7 +70,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033326_08a6f155-e502-4d1d-95a6-60b7769e8b67',
     title: 'Rules of Marks',
     author: 'Juno Okafor',
-    category: 'Branding',
+    category: 'Web',
     pages: 212,
     year: 2024,
     score: 4.8,
@@ -84,7 +84,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033326_c5a053e3-7715-4568-9125-10dbe94553a2',
     title: 'Shaping Identity',
     author: 'Elena Marsh',
-    category: 'Branding',
+    category: 'Web',
     pages: 304,
     year: 2022,
     score: 4.9,
@@ -98,7 +98,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033326_55f0fe07-e4ee-4593-9f95-048d16d00ff6',
     title: 'Make it Matter',
     author: 'Theo Brandt',
-    category: 'Typography',
+    category: 'Motion',
     pages: 176,
     year: 2025,
     score: 4.6,
@@ -112,7 +112,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033326_6b08a110-3b3e-4ec5-bc4b-c74529c150d5',
     title: 'Type Weather',
     author: 'Ada Kowal',
-    category: 'Typography',
+    category: 'Motion',
     pages: 228,
     year: 2024,
     score: 4.8,
@@ -126,7 +126,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033327_682c9cb0-53ec-4295-be49-f580b5c227df',
     title: 'Small Ideas, Big Change',
     author: 'Rui Sato',
-    category: 'Posters',
+    category: 'Editions',
     pages: 160,
     year: 2023,
     score: 4.5,
@@ -140,7 +140,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033326_a0acd858-b948-4dfc-ab4e-1c231920b1d3',
     title: 'Quiet Systems',
     author: 'Noor Haddad',
-    category: 'Layout',
+    category: 'Systems',
     pages: 196,
     year: 2022,
     score: 4.7,
@@ -154,7 +154,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033349_28c091d1-780b-4588-a455-5005f6e8cf61',
     title: 'Colour Is a Verb',
     author: 'Lena Fosse',
-    category: 'Posters',
+    category: 'Editions',
     pages: 184,
     year: 2025,
     score: 4.6,
@@ -168,7 +168,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033349_daee32f0-2cba-4282-9a73-3a9867931dba',
     title: 'Letters in Motion',
     author: 'Kai Mendez',
-    category: 'Typography',
+    category: 'Motion',
     pages: 220,
     year: 2025,
     score: 4.8,
@@ -182,7 +182,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033349_da8b7941-c1f0-47e8-b671-f0e1c4059711',
     title: 'The Honest Page',
     author: 'Clara Weiss',
-    category: 'Layout',
+    category: 'Systems',
     pages: 264,
     year: 2021,
     score: 4.9,
@@ -196,7 +196,7 @@ const RAW_BOOKS: Array<{
     id: '20261121_033348_9e021045-5de0-46f4-bc5d-c9dda64062c3',
     title: 'Signal & Noise',
     author: 'Omar Reyes',
-    category: 'Branding',
+    category: 'Web',
     pages: 236,
     year: 2024,
     score: 4.7,
@@ -255,10 +255,10 @@ export function filterBooks(
 
 export function getCategoryCounts(books: readonly Book[]): Record<Category, number> {
   const counts: Record<Category, number> = {
-    Typography: 0,
-    Branding: 0,
-    Posters: 0,
-    Layout: 0,
+    Web: 0,
+    Motion: 0,
+    Editions: 0,
+    Systems: 0,
   };
   for (const book of books) {
     counts[book.category] += 1;

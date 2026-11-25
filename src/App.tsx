@@ -133,7 +133,7 @@ export default function App() {
       window.setTimeout(() => {
         setShelfBumpKey((k) => k + 1);
       }, 980);
-      showToast(`Added “${book.title}” to your collection`);
+      showToast(`Added “${book.title}” to saved`);
     },
     [showToast],
   );

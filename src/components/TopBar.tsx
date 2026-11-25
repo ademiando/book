@@ -132,14 +132,11 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <header className="top-bar fixed inset-x-0 top-0 z-30 pointer-events-none px-4 pt-4 md:px-7 md:pt-5 transition-opacity duration-500">
-      <div className="relative flex items-start justify-between gap-4">
-        {/* Left: Counter (hidden on <760px) */}
-        <div className="top-bar-fade hidden md:flex items-center pt-1.5 text-[12.5px] font-medium tracking-[-0.01em] text-[#86827a] tabular-nums pointer-events-auto select-none transition-opacity duration-500 w-[210px]">
-          2,400 books · 186 curators
-        </div>
+      <div className="relative flex items-start justify-between gap-4 md:grid md:grid-cols-[1fr_auto_1fr] md:items-start md:gap-4">
+        <div className="hidden md:block" aria-hidden="true" />
 
-        {/* Center: Stacked Wordmark + Pill Search Bar */}
-        <div className="top-bar-fade flex flex-col items-center gap-2.5 mx-auto pointer-events-auto transition-opacity duration-500 w-full md:w-auto">
+        {/* Center: Stacked Wordmark (stays visible in focus) + Pill Search Bar */}
+        <div className="flex flex-col items-center gap-2.5 mx-auto pointer-events-auto w-full md:w-auto">
           <button
             type="button"
             onClick={onResetHome}
@@ -158,8 +155,11 @@ export const TopBar: React.FC<TopBarProps> = ({
             <span className="block">Atelier</span>
           </button>
 
-          <div ref={searchWrapRef} className="relative w-[min(304px,calc(100vw-32px))] md:w-[340px]">
-            <div className="water-droplet water-droplet-delay-1 flex items-center gap-2.5 h-10 px-3.5">
+          <div
+            ref={searchWrapRef}
+            className="top-bar-fade transition-opacity duration-500 relative w-[min(304px,calc(100vw-32px))] md:w-[340px]"
+          >
+            <div className="water-droplet water-droplet-delay-1 water-droplet-search flex items-center gap-2.5 h-10 px-3.5">
               <Search className="w-3.5 h-3.5 text-[#141414]/65 shrink-0" aria-hidden="true" />
               <input
                 ref={inputRef}
@@ -251,20 +251,20 @@ export const TopBar: React.FC<TopBarProps> = ({
           </div>
         </div>
 
-        {/* Right: My Collection Pill */}
+        {/* Right: Saved Pill */}
         <div
           ref={shelfWrapRef}
-          className="pointer-events-auto shrink-0 absolute right-0 top-0 md:static md:w-[210px] flex justify-end"
+          className="pointer-events-auto shrink-0 absolute right-0 top-0 md:static md:justify-self-end flex justify-end"
         >
           <button
             type="button"
             onClick={() => setShelfOpen((o) => !o)}
             aria-expanded={shelfOpen}
-            aria-label={`My Collection, ${shelfIds.length} saved items`}
+            aria-label={`Saved, ${shelfIds.length} saved items`}
             className="water-droplet water-droplet-delay-2 inline-flex items-center gap-1.5 md:gap-2 h-8 md:h-9 px-2.5 md:px-3.5 text-[11px] md:text-[12.5px] font-medium text-[#141414] cursor-pointer whitespace-nowrap"
           >
             <Bookmark className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>My Collection</span>
+            <span>Saved</span>
             <span
               key={shelfBumpKey}
               ref={shelfBadgeRef}
@@ -281,12 +281,12 @@ export const TopBar: React.FC<TopBarProps> = ({
           {shelfOpen && (
             <div className="absolute right-0 top-[calc(100%+8px)] w-[272px] rounded-2xl border border-[rgba(20,20,20,0.1)] bg-[#fbfaf6]/95 backdrop-blur-md shadow-[0_18px_40px_rgba(20,20,20,0.14)] p-2 z-50">
               <div className="px-2.5 py-1.5 text-[11px] font-medium text-[#86827a] border-b border-[rgba(20,20,20,0.08)] flex items-center justify-between">
-                <span>Saved to Collection</span>
+                <span>Saved</span>
                 <span className="tabular-nums">{savedBooks.length}</span>
               </div>
               {savedBooks.length === 0 ? (
                 <div className="px-3 py-6 text-center text-[12.5px] text-[#86827a] leading-relaxed">
-                  No works saved yet. Open any work and choose “Add to collection”.
+                  No works saved yet. Open any work and choose “Add to saved”.
                 </div>
               ) : (
                 <div className="mt-1.5 max-h-[280px] overflow-y-auto space-y-1">

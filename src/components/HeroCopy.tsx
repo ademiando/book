@@ -34,14 +34,14 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
 
   return (
     <section className="hero-copy" aria-label="The Atelier overview">
-      <div className="hero-copy-inner max-w-[272px] md:max-w-[780px]">
+      <div className="hero-copy-inner max-w-[304px] md:max-w-[780px]">
         <h1 className="headline-text m-0">
           <span className="line-mask">
-            <span className="line-rise">Every Idea is</span>
+            <span className="line-rise">Everything you can</span>
           </span>
           <span className="line-mask">
             <span className="line-rise line-rise-2">
-              Art of
+              imagine
               <button
                 type="button"
                 onClick={onShuffleRing}
@@ -75,7 +75,7 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
                   </span>
                 </span>
               </button>
-              the Mind.
+              is real.
             </span>
           </span>
         </h1>
@@ -84,10 +84,10 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
           className={`mt-3 md:mt-5 mb-0 leading-[1.45] md:leading-[1.5] text-[#86827a] font-normal ${
             layoutMode === 'grid'
               ? 'text-[14.5px] md:text-[17px] max-w-[330px] md:max-w-[440px]'
-              : 'text-[13.5px] md:text-[17px] max-w-[240px] md:max-w-[440px]'
+              : 'text-[13.5px] md:text-[17px] max-w-[260px] md:max-w-[460px]'
           }`}
         >
-          A digital studio of ideas, code, and written reflections.
+          A digital art studio of ideas, crafted in code and prose.
         </p>
 
         <div className="mt-5 md:mt-7 flex flex-col items-center gap-3 md:gap-3.5 pointer-events-auto w-full">

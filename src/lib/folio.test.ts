@@ -25,10 +25,10 @@ test('catalog contains all 12 books with valid category counts and cover URLs', 
   assert.equal(BOOKS.length, 12);
   const counts = getCategoryCounts(BOOKS);
   assert.deepEqual(counts, {
-    Typography: 3,
-    Branding: 3,
-    Posters: 3,
-    Layout: 3,
+    Web: 3,
+    Motion: 3,
+    Editions: 3,
+    Systems: 3,
   });
   for (const cat of CATEGORIES) {
     assert.equal(counts[cat], 3);
@@ -42,10 +42,10 @@ test('search matching is accent-insensitive across title, author, and category',
   assert.equal(matchesQuery(BOOKS[0], 'grid'), true);
   assert.equal(matchesQuery(BOOKS[0], 'Inés Vahl'), true);
   assert.equal(matchesQuery(BOOKS[8], 'Fossé'), true);
-  assert.equal(matchesQuery(BOOKS[5], 'typography'), true);
-  assert.equal(filterBooks(BOOKS, '', 'Posters').length, 3);
-  assert.equal(filterBooks(BOOKS, 'loud', 'Posters').length, 1);
-  assert.equal(filterBooks(BOOKS, 'loud', 'Layout').length, 0);
+  assert.equal(matchesQuery(BOOKS[5], 'motion'), true);
+  assert.equal(filterBooks(BOOKS, '', 'Editions').length, 3);
+  assert.equal(filterBooks(BOOKS, 'loud', 'Editions').length, 1);
+  assert.equal(filterBooks(BOOKS, 'loud', 'Systems').length, 0);
 });
 
 test('highlight segments locate query match cleanly', () => {

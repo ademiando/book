@@ -44,9 +44,10 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [book, onClose, onPrev, onNext]);
 
-  if (!book) return null;
+  const isOpen = Boolean(book);
 
   const handleShelfClick = () => {
+    if (!book) return;
     if (isOnShelf) {
       onRemoveFromShelf(book.id);
       return;
@@ -58,21 +59,30 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
   };
 
   return (
-    <div
-      className="fixed inset-0 z-35 pointer-events-none"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${book.title} details`}
-    >
-      {/* Top-left round black close button */}
+    <>
+      {/* Top-left round black close button with smooth appear & shrink-to-zero exit */}
       <button
         type="button"
         onClick={onClose}
         aria-label="Close book focus view"
-        className="pointer-events-auto fixed top-4 left-4 md:top-6 md:left-7 w-10 h-10 rounded-full bg-[#141414] text-[#f4f1ea] inline-flex items-center justify-center shadow-[0_8px_20px_rgba(20,20,20,0.2)] hover:scale-105 transition-transform cursor-pointer"
+        aria-hidden={!isOpen}
+        tabIndex={isOpen ? 0 : -1}
+        className={`fixed top-4 left-4 md:top-6 md:left-7 z-40 w-10 h-10 rounded-full bg-[#141414] text-[#f4f1ea] inline-flex items-center justify-center shadow-[0_8px_20px_rgba(20,20,20,0.2)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isOpen
+            ? 'opacity-100 scale-100 pointer-events-auto hover:scale-105 cursor-pointer'
+            : 'opacity-0 scale-0 pointer-events-none'
+        }`}
       >
         <X className="w-4 h-4" />
       </button>
+
+      {book && (
+        <div
+          className="fixed inset-0 z-35 pointer-events-none"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${book.title} details`}
+        >
 
       {/* Side panel (left 57% on desktop; bottom sheet on <760px without note) */}
       <aside
@@ -132,11 +142,11 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
           >
             {isOnShelf ? (
               <>
-                <span>In your collection</span>
+                <span>Saved</span>
                 <Check className="w-3.5 h-3.5" aria-hidden="true" />
               </>
             ) : (
-              <span>Add to collection</span>
+              <span>Add to saved</span>
             )}
           </button>
         </div>
@@ -170,7 +180,9 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
 
         <SocialIcons className="hidden md:flex md:order-3 md:justify-self-end pointer-events-auto" />
       </div>
-    </div>
+        </div>
+      )}
+    </>
   );
 };
 
