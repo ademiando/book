@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Bookmark, X } from 'lucide-react';
 import { Book, getBookCoverUrl } from '../lib/books';
 import { CopyrightLabel, SocialIcons } from './MinimalFooter';
 
@@ -60,20 +60,24 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
 
   return (
     <>
-      {/* Top-left round black close button with smooth appear & shrink-to-zero exit */}
+      {/* Top-left round black close button with smooth rotating X appear & shrink-to-zero exit */}
       <button
         type="button"
         onClick={onClose}
         aria-label="Close book focus view"
         aria-hidden={!isOpen}
         tabIndex={isOpen ? 0 : -1}
-        className={`fixed top-4 left-4 md:top-6 md:left-7 z-40 w-10 h-10 rounded-full bg-[#141414] text-[#f4f1ea] inline-flex items-center justify-center shadow-[0_8px_20px_rgba(20,20,20,0.2)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`group fixed top-4 left-4 md:top-6 md:left-7 z-40 w-10 h-10 rounded-full bg-[#141414] text-[#f4f1ea] inline-flex items-center justify-center shadow-[0_8px_20px_rgba(20,20,20,0.2)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           isOpen
             ? 'opacity-100 scale-100 pointer-events-auto hover:scale-105 cursor-pointer'
             : 'opacity-0 scale-0 pointer-events-none'
         }`}
       >
-        <X className="w-4 h-4" />
+        <X
+          className={`w-4 h-4 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            isOpen ? 'rotate-0 scale-100 group-hover:rotate-90' : '-rotate-180 scale-50'
+          }`}
+        />
       </button>
 
       {book && (
@@ -134,20 +138,21 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
           <button
             type="button"
             onClick={handleShelfClick}
-            className={`h-11 px-5 rounded-full text-[13px] font-medium border transition-all cursor-pointer inline-flex items-center gap-1.5 whitespace-nowrap ${
+            aria-pressed={isOnShelf}
+            aria-label={isOnShelf ? 'Remove from saved' : 'Save work'}
+            className={`h-11 px-5 rounded-full text-[13px] font-medium border transition-all cursor-pointer inline-flex items-center gap-2 whitespace-nowrap ${
               isOnShelf
-                ? 'bg-[#1f6e43] text-white border-[#1f6e43] hover:bg-[#195a36]'
+                ? 'bg-[#fbfaf6] text-[#141414] border-[#141414] shadow-sm'
                 : 'bg-transparent text-[#141414] border-[rgba(20,20,20,0.22)] hover:border-[#141414]'
             }`}
           >
-            {isOnShelf ? (
-              <>
-                <span>Saved</span>
-                <Check className="w-3.5 h-3.5" aria-hidden="true" />
-              </>
-            ) : (
-              <span>Add to saved</span>
-            )}
+            <Bookmark
+              className="w-3.5 h-3.5 transition-colors duration-200"
+              fill={isOnShelf ? '#141414' : 'none'}
+              stroke="#141414"
+              aria-hidden="true"
+            />
+            <span>Saved</span>
           </button>
         </div>
       </aside>

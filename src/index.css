@@ -333,7 +333,7 @@ body::before {
 .headline-text {
   font-family: 'Inter Tight', sans-serif;
   font-weight: 500;
-  font-size: clamp(40px, 5.6vw, 92px);
+  font-size: clamp(44px, 6.2vw, 96px);
   letter-spacing: -0.045em;
   line-height: 1.02;
   color: var(--ink);
@@ -668,10 +668,58 @@ body.focus .corners-bottom * {
   transform: translateY(0) scale(0.985, 1.015);
 }
 
+.water-droplet-dark {
+  position: relative;
+  background-color: #141414;
+  color: #f4f1ea;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 3px 6px -2px rgba(255, 255, 255, 0.34),
+    inset 0 -3px 6px -2px rgba(0, 0, 0, 0.55),
+    0 8px 24px rgba(20, 20, 20, 0.22);
+  border-radius: 35px 45px 35px 45px / 45px 35px 45px 35px;
+  animation: waterDropletWobble 4s ease-in-out infinite;
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1.5, 0.36, 1),
+    border-color 0.3s ease,
+    box-shadow 0.35s ease;
+}
+
+.water-droplet-dark::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.water-droplet-dark:hover,
+.water-droplet-dark:focus-visible {
+  background-color: #141414;
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
+  animation:
+    waterDropletWobble 2s ease-in-out infinite,
+    waterSurfaceBounce 0.52s cubic-bezier(0.22, 1.4, 0.36, 1) 1;
+  box-shadow:
+    inset 0 4px 8px -2px rgba(255, 255, 255, 0.46),
+    inset 0 -3px 7px -2px rgba(0, 0, 0, 0.6),
+    0 12px 28px rgba(20, 20, 20, 0.28);
+}
+
+.water-droplet-dark:hover::after {
+  animation: waterRippleWave 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.water-droplet-dark:active {
+  transform: translateY(0) scale(0.985, 1.015);
+}
+
 /* Responsive (<760px) */
 @media (max-width: 759px) {
   .headline-text {
-    font-size: clamp(25px, 6.8vw, 32px);
+    font-size: clamp(26px, 7.1vw, 34px);
   }
 
   html.mobile-grid-scroll,

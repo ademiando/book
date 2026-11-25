@@ -34,7 +34,7 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
 
   return (
     <section className="hero-copy" aria-label="The Atelier overview">
-      <div className="hero-copy-inner max-w-[304px] md:max-w-[780px]">
+      <div className="hero-copy-inner max-w-[316px] md:max-w-[840px]">
         <h1 className="headline-text m-0">
           <span className="line-mask">
             <span className="line-rise">Everything you can</span>
@@ -94,7 +94,7 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
           <button
             type="button"
             onClick={onToggleLayout}
-            className="cta-pill inline-flex items-center gap-2.5 px-5 md:px-6 rounded-full bg-[#141414] text-[#f4f1ea] text-[13px] md:text-[13.5px] font-medium cursor-pointer shadow-[0_8px_24px_rgba(20,20,20,0.16)] whitespace-nowrap"
+            className="cta-pill water-droplet-dark inline-flex items-center gap-2.5 px-5 md:px-6 text-[13px] md:text-[13.5px] font-medium cursor-pointer whitespace-nowrap"
           >
             <span>{layoutMode === 'grid' ? 'Back to Orbit' : 'View Collections'}</span>
             <ArrowRight className="cta-arrow w-4 h-4" aria-hidden="true" />
