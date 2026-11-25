@@ -36,6 +36,7 @@ interface DragState {
   type: 'book' | 'bg';
   bookIndex: number;
   pointerId: number;
+  pointerType: string;
   startX: number;
   startY: number;
   lastX: number;
@@ -44,6 +45,7 @@ interface DragState {
   vx: number;
   vy: number;
   moved: boolean;
+  lockedAxis?: 'scroll' | 'drag';
 }
 
 export const BookStage: React.FC<BookStageProps> = ({
@@ -200,19 +202,31 @@ export const BookStage: React.FC<BookStageProps> = ({
         drag.moved = true;
       }
 
+      const isMobileGrid =
+        dimsRef.current.isMobile &&
+        propsRef.current.layoutMode === 'grid' &&
+        propsRef.current.activeBookIndex === null;
+
       if (drag.type === 'bg' && propsRef.current.activeBookIndex === null) {
-        if (!(dimsRef.current.isMobile && propsRef.current.layoutMode === 'grid')) {
+        if (!isMobileGrid) {
           phaseRef.current += dx * 0.0032;
           phaseVRef.current = (dx / dtMs) * 0.16;
         }
       } else if (drag.type === 'book' && drag.moved) {
-        if (dimsRef.current.isMobile && propsRef.current.layoutMode === 'grid') {
-          return;
+        if (isMobileGrid && drag.pointerType === 'touch') {
+          if (!drag.lockedAxis) {
+            const totalDx = Math.abs(e.clientX - drag.startX);
+            const totalDy = Math.abs(e.clientY - drag.startY);
+            drag.lockedAxis = totalDy > totalDx * 1.15 ? 'scroll' : 'drag';
+          }
+          if (drag.lockedAxis === 'scroll') {
+            return;
+          }
         }
         const s = springsRef.current[drag.bookIndex];
         if (s) {
           s.p.x = e.clientX;
-          s.p.y = e.clientY;
+          s.p.y = e.clientY + (isMobileGrid ? window.scrollY : 0);
           s.p.z = 110;
           s.p.s = 1.1;
           s.p.rz = tiltsRef.current[drag.bookIndex] + drag.vx * 22;
@@ -233,13 +247,17 @@ export const BookStage: React.FC<BookStageProps> = ({
         const el = bookElsRef.current[drag.bookIndex];
         el?.classList.remove('is-dragging');
 
+        if (drag.lockedAxis === 'scroll') {
+          return;
+        }
+
         if (!drag.moved) {
           if (propsRef.current.activeBookIndex === drag.bookIndex) {
             propsRef.current.onToggleSample();
           } else {
             propsRef.current.onOpenBook(drag.bookIndex);
           }
-        } else if (!(dimsRef.current.isMobile && propsRef.current.layoutMode === 'grid')) {
+        } else {
           const s = springsRef.current[drag.bookIndex];
           if (s) {
             // Pointer velocity in px/ms -> px/s scaled by *60 (approx frame-normalized velocity)
@@ -256,6 +274,15 @@ export const BookStage: React.FC<BookStageProps> = ({
       }
     };
 
+    const onWindowPointerCancel = (e: PointerEvent) => {
+      const drag = dragRef.current;
+      if (!drag || drag.pointerId !== e.pointerId) return;
+      dragRef.current = null;
+      if (drag.type === 'book') {
+        bookElsRef.current[drag.bookIndex]?.classList.remove('is-dragging');
+      }
+    };
+
     const onWindowWheel = (e: WheelEvent) => {
       if (propsRef.current.activeBookIndex !== null) return;
       const target = e.target as HTMLElement | null;
@@ -266,7 +293,7 @@ export const BookStage: React.FC<BookStageProps> = ({
 
     window.addEventListener('pointermove', onWindowPointerMove);
     window.addEventListener('pointerup', onWindowPointerUp);
-    window.addEventListener('pointercancel', onWindowPointerUp);
+    window.addEventListener('pointercancel', onWindowPointerCancel);
     window.addEventListener('wheel', onWindowWheel, { passive: true });
 
     let rafId = 0;
@@ -462,7 +489,7 @@ export const BookStage: React.FC<BookStageProps> = ({
       window.removeEventListener('resize', updateMetrics);
       window.removeEventListener('pointermove', onWindowPointerMove);
       window.removeEventListener('pointerup', onWindowPointerUp);
-      window.removeEventListener('pointercancel', onWindowPointerUp);
+      window.removeEventListener('pointercancel', onWindowPointerCancel);
       window.removeEventListener('wheel', onWindowWheel);
     };
   }, []);
@@ -470,8 +497,12 @@ export const BookStage: React.FC<BookStageProps> = ({
   const handleBookPointerDown = (bookIndex: number, e: React.PointerEvent<HTMLButtonElement>) => {
     if (e.button !== 0 && e.pointerType === 'mouse') return;
     e.stopPropagation();
-    const isMobileGrid = dimsRef.current.isMobile && propsRef.current.layoutMode === 'grid' && propsRef.current.activeBookIndex === null;
-    if (!isMobileGrid) {
+    const isMobileGridTouch =
+      dimsRef.current.isMobile &&
+      propsRef.current.layoutMode === 'grid' &&
+      propsRef.current.activeBookIndex === null &&
+      e.pointerType === 'touch';
+    if (!isMobileGridTouch) {
       const el = bookElsRef.current[bookIndex];
       el?.classList.add('is-dragging');
       try {
@@ -484,6 +515,7 @@ export const BookStage: React.FC<BookStageProps> = ({
       type: 'book',
       bookIndex,
       pointerId: e.pointerId,
+      pointerType: e.pointerType,
       startX: e.clientX,
       startY: e.clientY,
       lastX: e.clientX,
@@ -501,6 +533,7 @@ export const BookStage: React.FC<BookStageProps> = ({
       type: 'bg',
       bookIndex: -1,
       pointerId: e.pointerId,
+      pointerType: e.pointerType,
       startX: e.clientX,
       startY: e.clientY,
       lastX: e.clientX,

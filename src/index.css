@@ -129,6 +129,10 @@ body::before {
   display: block;
 }
 
+body.focus .book .face {
+  pointer-events: auto;
+}
+
 .front {
   transform-style: preserve-3d;
   transform-origin: left center;
