@@ -66,6 +66,31 @@ export const MORPH_SPRING: SpringConfig = {
   },
 };
 
+export const ARTICLE_SPRING: SpringConfig = {
+  stiffness: {
+    x: 56,
+    y: 56,
+    z: 60,
+    rx: 68,
+    ry: 68,
+    rz: 68,
+    s: 52,
+    o: 80,
+    open: 64,
+  },
+  damping: {
+    x: 15.2,
+    y: 15.2,
+    z: 15.6,
+    rx: 16.6,
+    ry: 16.6,
+    rz: 16.6,
+    s: 14.6,
+    o: 18,
+    open: 16.2,
+  },
+};
+
 const SPRING_PROPS: readonly SpringProp[] = [
   'x',
   'y',

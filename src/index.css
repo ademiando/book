@@ -261,6 +261,82 @@ body.focus .book .face {
   font-variant-numeric: tabular-nums;
 }
 
+.page1.page1-turnable {
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  overflow: visible;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  backface-visibility: visible;
+  -webkit-backface-visibility: visible;
+  transform: translateZ(calc(var(--d) / 2 - 1.5px)) rotateY(0deg);
+  transition: transform 0.86s cubic-bezier(0.45, 0, 0.2, 1);
+}
+
+.book.is-article-turning .page1.page1-turnable {
+  transform: translateZ(calc(var(--d) / 2 - 1.5px)) rotateY(-140deg);
+  transition: transform 1.05s cubic-bezier(0.26, 0.08, 0.22, 1);
+}
+
+.page1-recto {
+  position: absolute;
+  inset: 0;
+  background: #fbf8f1;
+  border-radius: 2px 4px 4px 2px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow:
+    inset 14px 0 20px -10px rgba(20, 20, 20, 0.18),
+    inset 0 0 0 1px rgba(20, 20, 20, 0.06);
+  padding: calc(var(--w) * 0.11) calc(var(--w) * 0.1) calc(var(--w) * 0.09) calc(var(--w) * 0.13);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--ink);
+}
+
+.page1-verso {
+  position: absolute;
+  inset: 0;
+  background: #f5f1e6;
+  border-radius: 4px 2px 2px 4px;
+  overflow: hidden;
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow:
+    inset -14px 0 20px -10px rgba(20, 20, 20, 0.14),
+    inset 0 0 0 1px rgba(20, 20, 20, 0.06);
+  padding: calc(var(--w) * 0.11) calc(var(--w) * 0.13) calc(var(--w) * 0.09) calc(var(--w) * 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--mute);
+}
+
+.page2 {
+  transform: translateZ(calc(var(--d) / 2 - 2.8px));
+  background: #fbf8f1;
+  background-image:
+    linear-gradient(to right, rgba(20, 20, 20, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(20, 20, 20, 0.04) 1px, transparent 1px);
+  background-size: calc(var(--w) * 0.12) calc(var(--w) * 0.12);
+  border-radius: 2px 4px 4px 2px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow:
+    inset 14px 0 20px -10px rgba(20, 20, 20, 0.18),
+    inset 0 0 0 1px rgba(20, 20, 20, 0.06);
+  padding: calc(var(--w) * 0.11) calc(var(--w) * 0.1) calc(var(--w) * 0.09) calc(var(--w) * 0.13);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: var(--ink);
+}
+
 .back {
   transform: translateZ(calc(var(--d) / -2)) rotateY(180deg);
   border-radius: 5px 2px 2px 5px;
@@ -610,14 +686,14 @@ body.focus .corners-bottom * {
 
 .water-droplet {
   position: relative;
-  background-color: rgba(0, 0, 0, 0.05);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background-color: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   box-shadow:
-    inset 0 3px 6px -2px rgba(255, 255, 255, 0.5),
-    inset 0 -3px 6px -2px rgba(0, 0, 0, 0.2),
-    0 4px 10px rgba(0, 0, 0, 0.15);
+    inset 0 3px 6px -2px rgba(255, 255, 255, 0.55),
+    inset 0 -3px 6px -2px rgba(0, 0, 0, 0.16),
+    0 4px 10px rgba(0, 0, 0, 0.12);
   border-radius: 35px 45px 35px 45px / 45px 35px 45px 35px;
   animation: waterDropletWobble 4s ease-in-out infinite;
   transition:
@@ -646,16 +722,16 @@ body.focus .corners-bottom * {
 
 .water-droplet:hover,
 .water-droplet:focus-within {
-  background-color: rgba(0, 0, 0, 0.08);
-  border-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.34);
   transform: translateY(-2px);
   animation:
     waterDropletWobble 2s ease-in-out infinite,
     waterSurfaceBounce 0.52s cubic-bezier(0.22, 1.4, 0.36, 1) 1;
   box-shadow:
-    inset 0 4px 8px -2px rgba(255, 255, 255, 0.62),
-    inset 0 -3px 7px -2px rgba(0, 0, 0, 0.24),
-    0 8px 18px rgba(0, 0, 0, 0.18);
+    inset 0 4px 8px -2px rgba(255, 255, 255, 0.65),
+    inset 0 -3px 7px -2px rgba(0, 0, 0, 0.2),
+    0 8px 18px rgba(0, 0, 0, 0.15);
 }
 
 .water-droplet-search:hover,

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BOOKS, Book, getBookCoverUrl } from '../lib/books';
 import {
+  ARTICLE_SPRING,
   BookDimensions,
   BookPose,
   BookSpringState,
@@ -19,9 +20,12 @@ import {
   integrateBookSpring,
 } from '../lib/physics';
 
+export type ArticlePhase = 'closed' | 'turning' | 'zooming' | 'open' | 'closing' | 'returning';
+
 interface BookStageProps {
   activeBookIndex: number | null;
   isSampleOpen: boolean;
+  articlePhase: ArticlePhase;
   layoutMode: 'orbit' | 'grid';
   activeIndices: number[];
   shuffleNonce: number;
@@ -51,6 +55,7 @@ interface DragState {
 export const BookStage: React.FC<BookStageProps> = ({
   activeBookIndex,
   isSampleOpen,
+  articlePhase,
   layoutMode,
   activeIndices,
   shuffleNonce,
@@ -72,6 +77,7 @@ export const BookStage: React.FC<BookStageProps> = ({
   const propsRef = useRef({
     activeBookIndex,
     isSampleOpen,
+    articlePhase,
     layoutMode,
     activeIndices,
     onOpenBook,
@@ -83,6 +89,7 @@ export const BookStage: React.FC<BookStageProps> = ({
   propsRef.current = {
     activeBookIndex,
     isSampleOpen,
+    articlePhase,
     layoutMode,
     activeIndices,
     onOpenBook,
@@ -102,8 +109,18 @@ export const BookStage: React.FC<BookStageProps> = ({
   const hoveredIdxRef = useRef<number | null>(null);
   const dragRef = useRef<DragState | null>(null);
   const prevLayoutRef = useRef<'orbit' | 'grid'>(layoutMode);
+  const prevArticlePhaseRef = useRef<ArticlePhase>(articlePhase);
   const prevShuffleRef = useRef<number>(shuffleNonce);
   const layoutTransitionUntilRef = useRef<number>(0);
+  const articleTransitionUntilRef = useRef<number>(0);
+
+  // Engage smooth cinematic zoom spring when GRID article opens or closes
+  useEffect(() => {
+    if (prevArticlePhaseRef.current !== articlePhase) {
+      prevArticlePhaseRef.current = articlePhase;
+      articleTransitionUntilRef.current = performance.now() + 1800;
+    }
+  }, [articlePhase]);
 
   // Kick book velocities on Orbit <-> Grid toggle and engage smooth slow morph spring
   useEffect(() => {
@@ -309,10 +326,20 @@ export const BookStage: React.FC<BookStageProps> = ({
       const {
         activeBookIndex: focusIdx,
         isSampleOpen: sampleOpen,
+        articlePhase: currentArticlePhase,
         layoutMode: mode,
         activeIndices: activeList,
         onMobileGridHeightChange: reportHeight,
       } = propsRef.current;
+      const isArticleTurning =
+        currentArticlePhase === 'turning' ||
+        currentArticlePhase === 'zooming' ||
+        currentArticlePhase === 'open' ||
+        currentArticlePhase === 'closing';
+      const articleZoomed =
+        currentArticlePhase === 'zooming' ||
+        currentArticlePhase === 'open' ||
+        currentArticlePhase === 'closing';
 
       const dims = dimsRef.current;
       const ring = ringRef.current;
@@ -355,7 +382,11 @@ export const BookStage: React.FC<BookStageProps> = ({
       }
 
       const activeSpringConfig =
-        now < layoutTransitionUntilRef.current ? MORPH_SPRING : DEFAULT_SPRING;
+        now < layoutTransitionUntilRef.current
+          ? MORPH_SPRING
+          : now < articleTransitionUntilRef.current
+            ? ARTICLE_SPRING
+            : DEFAULT_SPRING;
 
       const activeSlotMap = new Map<number, number>();
       for (let k = 0; k < activeList.length; k += 1) {
@@ -390,7 +421,39 @@ export const BookStage: React.FC<BookStageProps> = ({
           };
         } else if (focusIdx !== null) {
           if (i === focusIdx) {
-            target = computeFocusBookTarget(w, h, dims, sampleOpen, ptr.mx, ptr.my);
+            if (articleZoomed && book.title === 'GRID') {
+              const fillScale = Math.max((w * 1.04) / dims.bw, (h * 1.04) / dims.bh);
+              target = {
+                x: w * 0.5,
+                y: h * 0.5,
+                z: 210,
+                rx: 0,
+                ry: 0,
+                rz: 0,
+                s: fillScale,
+                o: 1,
+                open: 0.98,
+              };
+            } else if (currentArticlePhase === 'turning' && book.title === 'GRID') {
+              const previewScale = dims.isMobile
+                ? Math.min(1.12, (0.34 * h) / dims.bh)
+                : Math.min(1.72, (0.62 * h) / dims.bh);
+              target = {
+                x: dims.isMobile
+                  ? w * 0.54
+                  : w * 0.5 + dims.bw * previewScale * 0.14,
+                y: h * 0.5,
+                z: 145,
+                rx: 0,
+                ry: 0,
+                rz: 0,
+                s: previewScale,
+                o: 1,
+                open: 0.98,
+              };
+            } else {
+              target = computeFocusBookTarget(w, h, dims, sampleOpen, ptr.mx, ptr.my);
+            }
           } else {
             target = computeFocusOutTarget(
               state.p.x,
@@ -453,6 +516,7 @@ export const BookStage: React.FC<BookStageProps> = ({
         bookEl.style.setProperty('--open', `${Math.max(0, Math.min(1, p.open)).toFixed(4)}`);
         bookEl.style.setProperty('--gx', `${(p.ry * 2.2).toFixed(1)}px`);
         bookEl.style.pointerEvents = clampedO > 0.15 ? 'auto' : 'none';
+        bookEl.classList.toggle('is-article-turning', Boolean(isArticleTurning && book.title === 'GRID' && i === focusIdx));
 
         const lift = Math.max(0, p.z);
         const sx = tx + 10 + lift * 0.22;
@@ -628,20 +692,66 @@ export const BookStage: React.FC<BookStageProps> = ({
                   />
                 </span>
 
-                {/* First readable page */}
-                <span className="face page1">
-                  <span>
-                    <span className="block page1-kicker">
-                      {book.category} · {book.year}
+                {/* Page 2 (revealed underneath as Page 1 flips open on GRID) */}
+                {book.title === 'GRID' && (
+                  <span className="face page2" aria-hidden="true">
+                    <span>
+                      <span className="block page1-kicker">
+                        SYSTEMS · MONOGRAPH · EXCERPT II
+                      </span>
+                      <span className="block page1-title">
+                        GRID — The Architecture of Quiet Order
+                      </span>
+                      <span className="block page1-note">
+                        Concept 01: Structure before ornament. Twelve columns and twenty-pixel gutters treated as an acoustic chamber for typography.
+                      </span>
                     </span>
-                    <span className="block page1-title">{book.title}</span>
-                    <span className="block page1-note">{book.note}</span>
+                    <span className="page1-foot">
+                      <span>{book.author}</span>
+                      <span>p. 02</span>
+                    </span>
                   </span>
-                  <span className="page1-foot">
-                    <span>{book.author}</span>
-                    <span>p. 01</span>
+                )}
+
+                {/* First readable page (hinged recto/verso on GRID so Page 1 physically turns) */}
+                {book.title === 'GRID' ? (
+                  <span className="face page1 page1-turnable">
+                    <span className="page1-recto">
+                      <span>
+                        <span className="block page1-kicker">
+                          {book.category} · {book.year}
+                        </span>
+                        <span className="block page1-title">{book.title}</span>
+                        <span className="block page1-note">{book.note}</span>
+                      </span>
+                      <span className="page1-foot">
+                        <span>{book.author}</span>
+                        <span>p. 01</span>
+                      </span>
+                    </span>
+                    <span className="page1-verso" aria-hidden="true">
+                      <span className="block page1-kicker">FIG. 01 · SPINE MARGIN</span>
+                      <span className="page1-foot">
+                        <span>60 RECONSTRUCTED LAYOUTS</span>
+                        <span>i</span>
+                      </span>
+                    </span>
                   </span>
-                </span>
+                ) : (
+                  <span className="face page1">
+                    <span>
+                      <span className="block page1-kicker">
+                        {book.category} · {book.year}
+                      </span>
+                      <span className="block page1-title">{book.title}</span>
+                      <span className="block page1-note">{book.note}</span>
+                    </span>
+                    <span className="page1-foot">
+                      <span>{book.author}</span>
+                      <span>p. 01</span>
+                    </span>
+                  </span>
+                )}
 
                 {/* Back cover */}
                 <span

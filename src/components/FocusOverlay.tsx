@@ -2,16 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { Bookmark, X } from 'lucide-react';
 import { Book, getBookCoverUrl } from '../lib/books';
 import { computeFocusBookTarget, getBookDimensions } from '../lib/physics';
+import type { ArticlePhase } from './BookStage';
 import { CopyrightLabel, SocialIcons } from './MinimalFooter';
 
 interface FocusOverlayProps {
   book: Book | null;
   isSampleOpen: boolean;
+  articlePhase: ArticlePhase;
   isOnShelf: boolean;
   onClose: () => void;
   onPrev: () => void;
   onNext: () => void;
   onToggleSample: () => void;
+  onOpenArticle: () => void;
+  onCloseArticle: () => void;
   onAddToShelf: (book: Book, sourceEl: HTMLElement | null) => void;
   onRemoveFromShelf: (id: string) => void;
 }
@@ -19,11 +23,14 @@ interface FocusOverlayProps {
 export const FocusOverlay: React.FC<FocusOverlayProps> = ({
   book,
   isSampleOpen,
+  articlePhase,
   isOnShelf,
   onClose,
   onPrev,
   onNext,
   onToggleSample,
+  onOpenArticle,
+  onCloseArticle,
   onAddToShelf,
   onRemoveFromShelf,
 }) => {
@@ -40,23 +47,37 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
 
   useEffect(() => {
     if (!book) return;
+    const isArticleActive =
+      book.title === 'GRID' &&
+      (articlePhase === 'turning' || articlePhase === 'zooming' || articlePhase === 'open');
+    const isAnyArticlePhase = book.title === 'GRID' && articlePhase !== 'closed';
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
-        onClose();
-      } else if (e.key === 'ArrowLeft') {
+        if (isArticleActive) {
+          onCloseArticle();
+        } else if (!isAnyArticlePhase) {
+          onClose();
+        }
+      } else if (e.key === 'ArrowLeft' && !isAnyArticlePhase) {
         e.preventDefault();
         onPrev();
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === 'ArrowRight' && !isAnyArticlePhase) {
         e.preventDefault();
         onNext();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [book, onClose, onPrev, onNext]);
+  }, [book, articlePhase, onClose, onCloseArticle, onPrev, onNext]);
 
   const isOpen = Boolean(book);
+  const isGridBook = book?.title === 'GRID';
+  const showArticle = Boolean(isGridBook && articlePhase !== 'closed');
+  const isArticleDismissible = Boolean(
+    isGridBook &&
+      (articlePhase === 'turning' || articlePhase === 'zooming' || articlePhase === 'open'),
+  );
 
   const dims = getBookDimensions(viewport.w);
   const focusPose = computeFocusBookTarget(viewport.w, viewport.h, dims, isSampleOpen, 0.5, 0.5);
@@ -94,8 +115,14 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
       {/* Top-left round black close button with smooth rotating X appear & shrink-to-zero exit */}
       <button
         type="button"
-        onClick={onClose}
-        aria-label="Close book focus view"
+        onClick={() => {
+          if (isArticleDismissible) {
+            onCloseArticle();
+          } else if (!showArticle) {
+            onClose();
+          }
+        }}
+        aria-label={isArticleDismissible ? 'Close excerpt article' : 'Close book focus view'}
         aria-hidden={!isOpen}
         tabIndex={isOpen ? 0 : -1}
         className={`group fixed top-4 left-4 md:top-6 md:left-7 z-40 w-10 h-10 rounded-full bg-[#141414] text-[#f4f1ea] inline-flex items-center justify-center shadow-[0_8px_20px_rgba(20,20,20,0.2)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
@@ -122,7 +149,9 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
       {/* Side panel (left 57% on desktop; bottom sheet on <760px without note) */}
       <aside
         key={book.id}
-        className="pointer-events-auto fixed left-5 right-5 bottom-24 md:bottom-auto md:right-8 md:left-[57%] md:top-1/2 md:-translate-y-1/2 max-w-[440px] focus-stagger"
+        className={`fixed left-5 right-5 bottom-24 md:bottom-auto md:right-8 md:left-[57%] md:top-1/2 md:-translate-y-1/2 max-w-[440px] focus-stagger transition-opacity duration-300 ease-out ${
+          showArticle ? 'opacity-0 pointer-events-none' : 'pointer-events-auto opacity-100'
+        }`}
       >
         <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
           {book.category} · {book.year}
@@ -160,10 +189,10 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
         <div className="mt-5 md:mt-7 flex flex-wrap items-center gap-2.5">
           <button
             type="button"
-            onClick={onToggleSample}
+            onClick={isGridBook ? onOpenArticle : onToggleSample}
             className="h-11 px-5 rounded-full bg-[#141414] text-[#f4f1ea] text-[13px] font-medium hover:bg-[#2a2a2a] transition-colors cursor-pointer whitespace-nowrap"
           >
-            {isSampleOpen ? 'Close excerpt' : 'Read excerpt'}
+            {isGridBook ? 'Read excerpt' : isSampleOpen ? 'Close excerpt' : 'Read excerpt'}
           </button>
 
           <button
@@ -190,7 +219,9 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
 
       {/* Prev/Next elongated borderless arrows directly beneath the book on left/right edges */}
       <div
-        className="pointer-events-none fixed flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        className={`pointer-events-none fixed flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          showArticle ? 'opacity-0 pointer-events-none' : ''
+        }`}
         style={{
           top: `${arrowRowTop}px`,
           left: `${arrowRowLeft}px`,

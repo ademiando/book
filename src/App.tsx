@@ -2,8 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BOOKS, Book, Category, THROW_TOASTS, filterBooks } from './lib/books';
 import { TopBar } from './components/TopBar';
 import { HeroCopy } from './components/HeroCopy';
-import { BookStage } from './components/BookStage';
+import { ArticlePhase, BookStage } from './components/BookStage';
 import { FocusOverlay, launchFlyToShelfAnimation } from './components/FocusOverlay';
+import { GridArticleOverlay } from './components/GridArticleOverlay';
 import { CopyrightLabel, SocialIcons } from './components/MinimalFooter';
 
 const SHELF_STORAGE_KEY = 'folio-room-shelf';
@@ -28,6 +29,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeBookIndex, setActiveBookIndex] = useState<number | null>(null);
   const [isSampleOpen, setIsSampleOpen] = useState(false);
+  const [articlePhase, setArticlePhase] = useState<ArticlePhase>('closed');
   const [shelfIds, setShelfIds] = useState<string[]>(loadInitialShelf);
   const [shelfBumpKey, setShelfBumpKey] = useState(0);
   const [shuffleNonce, setShuffleNonce] = useState(0);
@@ -37,6 +39,7 @@ export default function App() {
   const shelfBadgeRef = useRef<HTMLSpanElement | null>(null);
   const toastTimerRef = useRef<number | null>(null);
   const openTimerRef = useRef<number | null>(null);
+  const articleTimerRef = useRef<number | null>(null);
   const throwCounterRef = useRef(0);
 
   const showToast = useCallback((text: string) => {
@@ -87,25 +90,63 @@ export default function App() {
     [activeBooks],
   );
 
+  const clearArticleTimer = useCallback(() => {
+    if (articleTimerRef.current) {
+      window.clearTimeout(articleTimerRef.current);
+      articleTimerRef.current = null;
+    }
+  }, []);
+
+  const openArticle = useCallback(() => {
+    clearArticleTimer();
+    setArticlePhase('turning');
+    articleTimerRef.current = window.setTimeout(() => {
+      setArticlePhase('zooming');
+      articleTimerRef.current = window.setTimeout(() => {
+        setArticlePhase('open');
+        articleTimerRef.current = null;
+      }, 960);
+    }, 560);
+  }, [clearArticleTimer]);
+
+  const closeArticle = useCallback(() => {
+    clearArticleTimer();
+    setArticlePhase((curr) => {
+      if (curr === 'closed' || curr === 'returning') return curr;
+      return 'closing';
+    });
+    articleTimerRef.current = window.setTimeout(() => {
+      setArticlePhase('returning');
+      articleTimerRef.current = window.setTimeout(() => {
+        setArticlePhase('closed');
+        articleTimerRef.current = null;
+      }, 860);
+    }, 260);
+  }, [clearArticleTimer]);
+
   const openBook = useCallback((index: number) => {
     if (openTimerRef.current) {
       window.clearTimeout(openTimerRef.current);
     }
+    clearArticleTimer();
+    setArticlePhase('closed');
     setActiveBookIndex(index);
     setIsSampleOpen(false);
     openTimerRef.current = window.setTimeout(() => {
       setIsSampleOpen(true);
     }, 880);
-  }, []);
+  }, [clearArticleTimer]);
 
   const closeFocus = useCallback(() => {
     if (openTimerRef.current) {
       window.clearTimeout(openTimerRef.current);
       openTimerRef.current = null;
     }
+    clearArticleTimer();
+    setArticlePhase('closed');
     setIsSampleOpen(false);
     setActiveBookIndex(null);
-  }, []);
+  }, [clearArticleTimer]);
 
   const navigateFocus = useCallback(
     (delta: -1 | 1) => {
@@ -193,6 +234,7 @@ export default function App() {
       <BookStage
         activeBookIndex={activeBookIndex}
         isSampleOpen={isSampleOpen}
+        articlePhase={articlePhase}
         layoutMode={layoutMode}
         activeIndices={activeIndices}
         shuffleNonce={shuffleNonce}
@@ -227,13 +269,22 @@ export default function App() {
       <FocusOverlay
         book={focusedBook}
         isSampleOpen={isSampleOpen}
+        articlePhase={articlePhase}
         isOnShelf={focusedBook ? shelfIds.includes(focusedBook.id) : false}
         onClose={closeFocus}
         onPrev={() => navigateFocus(-1)}
         onNext={() => navigateFocus(1)}
         onToggleSample={handleToggleSample}
+        onOpenArticle={openArticle}
+        onCloseArticle={closeArticle}
         onAddToShelf={handleAddToShelf}
         onRemoveFromShelf={handleRemoveFromShelf}
+      />
+
+      <GridArticleOverlay
+        book={focusedBook}
+        isOpen={Boolean(focusedBook?.title === 'GRID' && articlePhase === 'open')}
+        onClose={closeArticle}
       />
 
       {/* Bottom Corners: Orbit keeps original hint + switch; Grid shows thin copyright footer + 3 monochrome social icons */}

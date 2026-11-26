@@ -10,6 +10,7 @@ import {
   matchesQuery,
 } from './books';
 import {
+  ARTICLE_SPRING,
   MORPH_SPRING,
   buildRingTable,
   computeFocusBookTarget,
@@ -119,6 +120,34 @@ test('spring integration converges smoothly to target pose', () => {
   }
   assert.ok(Math.abs(morphState.p.x - target.x) < 0.5);
   assert.ok(Math.abs(morphState.p.y - target.y) < 0.5);
+
+  const articleState = createBookSpringState({
+    x: 420,
+    y: 450,
+    z: 145,
+    rx: 0,
+    ry: 0,
+    rz: 0,
+    s: 1.72,
+    o: 1,
+    open: 0.98,
+  });
+  const articleTarget = {
+    x: 720,
+    y: 450,
+    z: 210,
+    rx: 0,
+    ry: 0,
+    rz: 0,
+    s: 8.14,
+    o: 1,
+    open: 0.98,
+  };
+  for (let frame = 0; frame < 65; frame += 1) {
+    integrateBookSpring(articleState, articleTarget, 1 / 60, ARTICLE_SPRING);
+    assert.ok(articleState.p.s <= articleTarget.s + 0.05);
+  }
+  assert.ok(Math.abs(articleState.p.s - articleTarget.s) < 0.06);
 });
 
 test('top clearance lifts and shrinks books crossing top center', () => {
