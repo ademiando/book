@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { BOOKS, CATEGORIES, Category, getBookCoverUrl, getCategoryCounts } from '../lib/books';
 
@@ -6,11 +6,21 @@ interface HeroCopyProps {
   layoutMode: 'orbit' | 'grid';
   onToggleLayout: () => void;
   activeCategory: Category | null;
-  onToggleCategory: (category: Category) => void;
+  onToggleCategory: (category: Category | null) => void;
   onShuffleRing: () => void;
 }
 
 const CATEGORY_COUNTS = getCategoryCounts(BOOKS);
+
+const FILTER_OPTIONS: ReadonlyArray<{ key: 'ALL' | Category; label: string; value: Category | null; count: number }> = [
+  { key: 'ALL', label: 'All', value: null, count: BOOKS.length },
+  ...CATEGORIES.map((category) => ({
+    key: category,
+    label: category,
+    value: category,
+    count: CATEGORY_COUNTS[category],
+  })),
+];
 
 export const HeroCopy: React.FC<HeroCopyProps> = ({
   layoutMode,
@@ -20,6 +30,17 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
   onShuffleRing,
 }) => {
   const [flipCount, setFlipCount] = useState(0);
+  const [indicator, setIndicator] = useState<{ left: number; width: number }>({ left: 0, width: 0 });
+
+  const scrollBarRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const dragScrollRef = useRef<{ active: boolean; startX: number; scrollLeft: number; moved: boolean }>({
+    active: false,
+    startX: 0,
+    scrollLeft: 0,
+    moved: false,
+  });
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -27,6 +48,60 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
     }, 2600);
     return () => window.clearInterval(id);
   }, []);
+
+  const activeKey = activeCategory ?? 'ALL';
+
+  useLayoutEffect(() => {
+    const updateIndicator = () => {
+      const btn = tabRefs.current[activeKey];
+      if (!btn) return;
+      setIndicator({ left: btn.offsetLeft, width: btn.offsetWidth });
+    };
+
+    updateIndicator();
+
+    const activeBtn = tabRefs.current[activeKey];
+    activeBtn?.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+
+    const track = trackRef.current;
+    if (!track || typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', updateIndicator);
+      return () => window.removeEventListener('resize', updateIndicator);
+    }
+
+    const observer = new ResizeObserver(updateIndicator);
+    observer.observe(track);
+    return () => observer.disconnect();
+  }, [activeKey, layoutMode]);
+
+  const handleBarPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    const el = scrollBarRef.current;
+    if (!el) return;
+    dragScrollRef.current = {
+      active: true,
+      startX: e.clientX,
+      scrollLeft: el.scrollLeft,
+      moved: false,
+    };
+  };
+
+  const handleBarPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const ds = dragScrollRef.current;
+    const el = scrollBarRef.current;
+    if (!ds.active || !el) return;
+    const dx = e.clientX - ds.startX;
+    if (Math.abs(dx) >= 5) {
+      ds.moved = true;
+    }
+    if (ds.moved) {
+      el.scrollLeft = ds.scrollLeft - dx;
+    }
+  };
+
+  const handleBarPointerUp = () => {
+    dragScrollRef.current.active = false;
+  };
 
   // Front face shows even flips, back face shows odd flips so every 2.6s rotateY reveals a fresh cover smoothly.
   const frontBook = BOOKS[Math.floor((flipCount + 1) / 2) * 2 % BOOKS.length];
@@ -101,43 +176,62 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
           </button>
 
           <div
-            className={
-              layoutMode === 'grid'
-                ? 'flex flex-nowrap items-center justify-center gap-1 md:gap-1.5 max-w-full overflow-x-auto no-scrollbar px-1'
-                : 'flex flex-wrap items-center justify-center gap-1.5 max-w-[252px] md:max-w-none'
-            }
+            ref={scrollBarRef}
+            onPointerDown={handleBarPointerDown}
+            onPointerMove={handleBarPointerMove}
+            onPointerUp={handleBarPointerUp}
+            onPointerCancel={handleBarPointerUp}
+            className={`no-scrollbar overflow-x-auto touch-pan-x rounded-full border border-[rgba(20,20,20,0.1)] bg-[#fbfaf6]/80 backdrop-blur-sm p-1 shadow-[0_2px_10px_rgba(20,20,20,0.04)] ${
+              layoutMode === 'grid' ? 'max-w-full' : 'max-w-[276px] md:max-w-none'
+            }`}
             role="group"
             aria-label="Filter by category"
           >
-            {CATEGORIES.map((category) => {
-              const isActive = activeCategory === category;
-              return (
-                <button
-                  key={category}
-                  type="button"
-                  aria-pressed={isActive}
-                  onClick={() => onToggleCategory(category)}
-                  className={`inline-flex items-center shrink-0 rounded-full font-medium border transition-all duration-300 cursor-pointer whitespace-nowrap ${
-                    layoutMode === 'grid'
-                      ? 'gap-1 md:gap-1.5 h-8 px-2.5 md:px-3 text-[11px] md:text-[12px]'
-                      : 'gap-1.5 h-7 md:h-8 px-2.5 md:px-3 text-[11px] md:text-[12px]'
-                  } ${
-                    isActive
-                      ? 'bg-[#141414] text-[#f4f1ea] border-[#141414]'
-                      : 'bg-[#fbfaf6]/75 text-[#141414] border-[rgba(20,20,20,0.1)] hover:border-[rgba(20,20,20,0.28)]'
-                  }`}
-                >
-                  <span>{category}</span>
-                  <span
-                    className={`tabular-nums text-[10.5px] md:text-[11px] ${
-                      isActive ? 'text-[#f4f1ea]/70' : 'text-[#86827a]'
+            <div ref={trackRef} className="relative inline-flex items-center gap-0.5 shrink-0">
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute top-0 bottom-0 left-0 rounded-full bg-[#141414] shadow-sm transition-[transform,width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                style={{
+                  width: `${indicator.width}px`,
+                  transform: `translate3d(${indicator.left}px, 0, 0)`,
+                  opacity: indicator.width > 0 ? 1 : 0,
+                }}
+              />
+              {FILTER_OPTIONS.map((opt) => {
+                const isActive = activeKey === opt.key;
+                return (
+                  <button
+                    key={opt.key}
+                    ref={(el) => {
+                      tabRefs.current[opt.key] = el;
+                    }}
+                    type="button"
+                    aria-pressed={isActive}
+                    onClick={() => {
+                      if (dragScrollRef.current.moved) {
+                        dragScrollRef.current.moved = false;
+                        return;
+                      }
+                      onToggleCategory(opt.value);
+                    }}
+                    className={`group relative z-10 inline-flex items-center shrink-0 rounded-full font-medium transition-colors duration-300 cursor-pointer whitespace-nowrap gap-1.5 h-7 md:h-8 px-2.5 md:px-3 text-[11px] md:text-[12px] ${
+                      isActive
+                        ? 'text-[#f4f1ea] hover:text-[#f4f1ea]'
+                        : 'text-[#141414]/80 hover:bg-[#141414] hover:text-[#f4f1ea]'
                     }`}
                   >
-                    {CATEGORY_COUNTS[category]}
-                  </span>
-                </button>
-              );
-            })}
+                    <span>{opt.label}</span>
+                    <span
+                      className={`tabular-nums text-[10.5px] md:text-[11px] transition-colors duration-300 ${
+                        isActive ? 'text-[#f4f1ea]/70' : 'text-[#86827a] group-hover:text-[#f4f1ea]/70'
+                      }`}
+                    >
+                      {opt.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

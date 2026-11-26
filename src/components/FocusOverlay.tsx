@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Bookmark, X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Bookmark, X } from 'lucide-react';
 import { Book, getBookCoverUrl } from '../lib/books';
+import { computeFocusBookTarget, getBookDimensions } from '../lib/physics';
 import { CopyrightLabel, SocialIcons } from './MinimalFooter';
 
 interface FocusOverlayProps {
@@ -26,6 +27,17 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
   onAddToShelf,
   onRemoveFromShelf,
 }) => {
+  const [viewport, setViewport] = useState(() => ({
+    w: typeof window !== 'undefined' ? window.innerWidth : 1440,
+    h: typeof window !== 'undefined' ? window.innerHeight : 900,
+  }));
+
+  useEffect(() => {
+    const onResize = () => setViewport({ w: window.innerWidth, h: window.innerHeight });
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
   useEffect(() => {
     if (!book) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -45,6 +57,25 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
   }, [book, onClose, onPrev, onNext]);
 
   const isOpen = Boolean(book);
+
+  const dims = getBookDimensions(viewport.w);
+  const focusPose = computeFocusBookTarget(viewport.w, viewport.h, dims, isSampleOpen, 0.5, 0.5);
+  const bookW = dims.bw * focusPose.s;
+  const bookH = dims.bh * focusPose.s;
+  const arrowRowTop = Math.min(
+    viewport.h - 68,
+    Math.round(focusPose.y + bookH * 0.5 + (dims.isMobile ? 12 : 18)),
+  );
+  const arrowRowLeft = dims.isMobile
+    ? 20
+    : Math.max(
+        28,
+        Math.round(focusPose.x - bookW * (isSampleOpen ? 1.42 : 0.5)),
+      );
+  const arrowRowRight = dims.isMobile
+    ? viewport.w - 20
+    : Math.min(Math.round(viewport.w * 0.54), Math.round(focusPose.x + bookW * 0.5));
+  const arrowRowWidth = Math.max(200, arrowRowRight - arrowRowLeft);
 
   const handleShelfClick = () => {
     if (!book) return;
@@ -157,33 +188,70 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
         </div>
       </aside>
 
-      {/* Bottom row: Prev/Next arrows + thin copyright footer & monochrome social icons */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 px-4 pb-3.5 md:px-7 md:pb-6 flex flex-col items-center gap-2 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-4">
-        <div className="pointer-events-auto order-2 md:order-1 w-full md:w-auto flex items-center justify-between md:justify-start md:justify-self-start">
+      {/* Prev/Next elongated borderless arrows directly beneath the book on left/right edges */}
+      <div
+        className="pointer-events-none fixed flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+        style={{
+          top: `${arrowRowTop}px`,
+          left: `${arrowRowLeft}px`,
+          width: `${arrowRowWidth}px`,
+        }}
+      >
+        <button
+          type="button"
+          onClick={onPrev}
+          aria-label="Previous book"
+          className="group pointer-events-auto py-2 pr-3 pl-0 bg-transparent border-0 text-[#141414]/80 hover:text-[#141414] inline-flex items-center justify-start transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414] rounded-sm"
+        >
+          <svg
+            width="34"
+            height="14"
+            viewBox="0 0 34 14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            className="transition-transform duration-300 group-hover:-translate-x-1"
+          >
+            <path d="M32 7H2" />
+            <path d="M8 1L2 7l6 6" />
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          onClick={onNext}
+          aria-label="Next book"
+          className="group pointer-events-auto py-2 pl-3 pr-0 bg-transparent border-0 text-[#141414]/80 hover:text-[#141414] inline-flex items-center justify-end transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414] rounded-sm"
+        >
+          <svg
+            width="34"
+            height="14"
+            viewBox="0 0 34 14"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            className="transition-transform duration-300 group-hover:translate-x-1"
+          >
+            <path d="M2 7h30" />
+            <path d="M26 1l6 6-6 6" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Bottom row: thin copyright footer & monochrome social icons */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 px-4 pb-3.5 md:px-7 md:pb-6 flex items-center justify-between">
+        <div className="pointer-events-auto">
           <CopyrightLabel />
-          <SocialIcons className="md:hidden" />
         </div>
-
-        <div className="pointer-events-auto order-1 md:order-2 md:justify-self-center flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onPrev}
-            aria-label="Previous book"
-            className="w-10 h-10 rounded-full border border-[rgba(20,20,20,0.12)] bg-[#fbfaf6]/90 backdrop-blur-md text-[#141414] inline-flex items-center justify-center hover:border-[#141414] transition-colors cursor-pointer shadow-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={onNext}
-            aria-label="Next book"
-            className="w-10 h-10 rounded-full border border-[rgba(20,20,20,0.12)] bg-[#fbfaf6]/90 backdrop-blur-md text-[#141414] inline-flex items-center justify-center hover:border-[#141414] transition-colors cursor-pointer shadow-sm"
-          >
-            <ArrowRight className="w-4 h-4" />
-          </button>
+        <div className="pointer-events-auto">
+          <SocialIcons />
         </div>
-
-        <SocialIcons className="hidden md:flex md:order-3 md:justify-self-end pointer-events-auto" />
       </div>
         </div>
       )}

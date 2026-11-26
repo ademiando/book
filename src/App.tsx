@@ -149,7 +149,11 @@ export default function App() {
     [showToast],
   );
 
-  const handleToggleCategory = useCallback((cat: Category) => {
+  const handleToggleCategory = useCallback((cat: Category | null) => {
+    if (cat === null) {
+      setActiveCategory(null);
+      return;
+    }
     setActiveCategory((prev) => (prev === cat ? null : cat));
   }, []);
 
