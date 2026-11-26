@@ -131,33 +131,34 @@ export const TopBar: React.FC<TopBarProps> = ({
   };
 
   return (
-    <header className="top-bar fixed inset-x-0 top-0 z-30 pointer-events-none px-4 pt-4 md:px-7 md:pt-5 transition-opacity duration-500">
-      <div className="relative flex items-start justify-between gap-4 md:grid md:grid-cols-[1fr_auto_1fr] md:items-start md:gap-4">
-        <div className="hidden md:block" aria-hidden="true" />
+    <>
+      {/* Sticky Center Wordmark (stays visible & fixed on scroll and in focus, without any background bar/lines) */}
+      <button
+        type="button"
+        onClick={onResetHome}
+        aria-label="The Atelier home"
+        className="fixed top-4 md:top-5 left-1/2 -translate-x-1/2 z-40 pointer-events-auto text-center cursor-pointer bg-transparent border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414] rounded-sm"
+        style={{
+          fontFamily: "'Inter Tight', sans-serif",
+          fontWeight: 700,
+          fontSize: '25px',
+          lineHeight: 0.86,
+          letterSpacing: '-0.04em',
+          color: '#141414',
+        }}
+      >
+        <span className="block">The</span>
+        <span className="block">Atelier</span>
+      </button>
 
-        {/* Center: Stacked Wordmark (stays visible in focus) + Pill Search Bar */}
-        <div className="flex flex-col items-center gap-2.5 mx-auto pointer-events-auto w-full md:w-auto">
-          <button
-            type="button"
-            onClick={onResetHome}
-            aria-label="The Atelier home"
-            className="text-center cursor-pointer bg-transparent border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414] rounded-sm"
-            style={{
-              fontFamily: "'Inter Tight', sans-serif",
-              fontWeight: 700,
-              fontSize: '25px',
-              lineHeight: 0.86,
-              letterSpacing: '-0.04em',
-              color: '#141414',
-            }}
-          >
-            <span className="block">The</span>
-            <span className="block">Atelier</span>
-          </button>
+      <header className="top-bar fixed inset-x-0 top-0 z-30 pointer-events-none px-4 pt-4 md:px-7 md:pt-5 transition-opacity duration-500">
+        {/* Center Search Bar (scrolls with page on mobile grid; fades in focus) */}
+        <div className="flex flex-col items-center gap-2.5 mx-auto pointer-events-none w-full md:w-auto">
+          <div className="h-[43px] shrink-0" aria-hidden="true" />
 
           <div
             ref={searchWrapRef}
-            className="top-bar-fade transition-opacity duration-500 relative w-[min(304px,calc(100vw-32px))] md:w-[340px]"
+            className="top-bar-fade pointer-events-auto transition-opacity duration-500 relative w-[min(304px,calc(100vw-32px))] md:w-[340px]"
           >
             <div className="water-droplet water-droplet-delay-1 water-droplet-search flex items-center gap-2.5 h-10 px-3.5">
               <Search className="w-3.5 h-3.5 text-[#141414]/65 shrink-0" aria-hidden="true" />
@@ -250,12 +251,13 @@ export const TopBar: React.FC<TopBarProps> = ({
             )}
           </div>
         </div>
+      </header>
 
-        {/* Right: Saved Pill */}
-        <div
-          ref={shelfWrapRef}
-          className="pointer-events-auto shrink-0 absolute right-0 top-0 md:static md:justify-self-end flex justify-end"
-        >
+      {/* Sticky Right: Saved Pill */}
+      <div
+        ref={shelfWrapRef}
+        className="pointer-events-auto shrink-0 fixed right-4 top-4 md:right-7 md:top-5 z-40 flex justify-end"
+      >
           <button
             type="button"
             onClick={() => setShelfOpen((o) => !o)}
@@ -337,8 +339,7 @@ export const TopBar: React.FC<TopBarProps> = ({
               )}
             </div>
           )}
-        </div>
       </div>
-    </header>
+    </>
   );
 };

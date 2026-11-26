@@ -176,18 +176,21 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
           </button>
 
           <div
-            ref={scrollBarRef}
-            onPointerDown={handleBarPointerDown}
-            onPointerMove={handleBarPointerMove}
-            onPointerUp={handleBarPointerUp}
-            onPointerCancel={handleBarPointerUp}
-            className={`no-scrollbar overflow-x-auto touch-pan-x rounded-full border border-[rgba(20,20,20,0.1)] bg-[#fbfaf6]/80 backdrop-blur-sm p-1 shadow-[0_2px_10px_rgba(20,20,20,0.04)] ${
+            className={`water-droplet p-1 inline-flex items-center ${
               layoutMode === 'grid' ? 'max-w-full' : 'max-w-[276px] md:max-w-none'
             }`}
             role="group"
             aria-label="Filter by category"
           >
-            <div ref={trackRef} className="relative inline-flex items-center gap-0.5 shrink-0">
+            <div
+              ref={scrollBarRef}
+              onPointerDown={handleBarPointerDown}
+              onPointerMove={handleBarPointerMove}
+              onPointerUp={handleBarPointerUp}
+              onPointerCancel={handleBarPointerUp}
+              className="no-scrollbar overflow-x-auto touch-pan-x rounded-full w-full"
+            >
+              <div ref={trackRef} className="relative inline-flex items-center gap-0.5 shrink-0">
               <span
                 aria-hidden="true"
                 className="pointer-events-none absolute top-0 bottom-0 left-0 rounded-full bg-[#141414] shadow-sm transition-[transform,width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
@@ -231,6 +234,7 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
                   </button>
                 );
               })}
+              </div>
             </div>
           </div>
         </div>
