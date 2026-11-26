@@ -19,6 +19,9 @@ import {
   getMobileGridMetrics,
   integrateBookSpring,
 } from '../lib/physics';
+import { GridArticlePageTop } from './GridArticlePageTop';
+
+const STAGE_PERSPECTIVE = 1900;
 
 export type ArticlePhase = 'closed' | 'turning' | 'zooming' | 'open' | 'closing' | 'returning';
 
@@ -72,6 +75,10 @@ export const BookStage: React.FC<BookStageProps> = ({
 
   const [hoveredBook, setHoveredBook] = useState<Book | null>(null);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+  const [viewport, setViewport] = useState(() => ({
+    w: typeof window !== 'undefined' ? window.innerWidth : 1440,
+    h: typeof window !== 'undefined' ? window.innerHeight : 900,
+  }));
 
   // Keep dynamic props in refs so the single rAF physics loop never tears down.
   const propsRef = useRef({
@@ -161,6 +168,7 @@ export const BookStage: React.FC<BookStageProps> = ({
       const dims = getBookDimensions(w);
       dimsRef.current = dims;
       ringRef.current = buildRingTable(w, h, 720);
+      setViewport((curr) => (curr.w === w && curr.h === h ? curr : { w, h }));
       if (stageRef.current) {
         stageRef.current.style.setProperty('--w', `${dims.bw}px`);
         stageRef.current.style.setProperty('--h', `${dims.bh}px`);
@@ -422,11 +430,17 @@ export const BookStage: React.FC<BookStageProps> = ({
         } else if (focusIdx !== null) {
           if (i === focusIdx) {
             if (articleZoomed && book.title === 'GRID') {
-              const fillScale = Math.max((w * 1.04) / dims.bw, (h * 1.04) / dims.bh);
+              const targetZ = 120;
+              const page2LocalZ = dims.d * 0.5 - 2.8;
+              const persp =
+                STAGE_PERSPECTIVE / (STAGE_PERSPECTIVE - (targetZ + page2LocalZ));
+              const fillScale = w / (dims.bw * persp);
+              const targetY =
+                h * 0.5 * (1 - 1 / persp) + dims.bh * fillScale * 0.5;
               target = {
                 x: w * 0.5,
-                y: h * 0.5,
-                z: 210,
+                y: targetY,
+                z: targetZ,
                 rx: 0,
                 ry: 0,
                 rz: 0,
@@ -692,26 +706,52 @@ export const BookStage: React.FC<BookStageProps> = ({
                   />
                 </span>
 
-                {/* Page 2 (revealed underneath as Page 1 flips open on GRID) */}
-                {book.title === 'GRID' && (
-                  <span className="face page2" aria-hidden="true">
-                    <span>
-                      <span className="block page1-kicker">
-                        SYSTEMS · MONOGRAPH · EXCERPT II
-                      </span>
-                      <span className="block page1-title">
-                        GRID — The Architecture of Quiet Order
-                      </span>
-                      <span className="block page1-note">
-                        Concept 01: Structure before ornament. Twelve columns and twenty-pixel gutters treated as an acoustic chamber for typography.
+                {/* Page 2 (exact scaled replica of GridArticlePageTop for zero-glitch transition) */}
+                {book.title === 'GRID' && (() => {
+                  const page2Dims = getBookDimensions(viewport.w);
+                  const isPage2Zoomed =
+                    articlePhase === 'zooming' ||
+                    articlePhase === 'open' ||
+                    articlePhase === 'closing';
+                  const fullHeightInBook = Math.max(
+                    page2Dims.bh,
+                    (viewport.h / Math.max(1, viewport.w)) * page2Dims.bw,
+                  );
+                  return (
+                    <span
+                      className="face page2"
+                      aria-hidden="true"
+                      style={
+                        isPage2Zoomed
+                          ? { height: `${fullHeightInBook.toFixed(2)}px` }
+                          : undefined
+                      }
+                    >
+                      <span
+                        className="block origin-top-left pointer-events-none"
+                        style={{
+                          width: `${viewport.w}px`,
+                          minHeight: `${Math.ceil(
+                            Math.max(viewport.h, viewport.w * 1.327),
+                          )}px`,
+                          transform: `scale(${(
+                            page2Dims.bw / Math.max(1, viewport.w)
+                          ).toFixed(6)})`,
+                          backgroundColor: '#fbf8f1',
+                          backgroundImage:
+                            'linear-gradient(to right, rgba(20,20,20,0.017) 1px, transparent 1px), linear-gradient(to bottom, rgba(20,20,20,0.017) 1px, transparent 1px)',
+                          backgroundSize: '48px 48px',
+                        }}
+                      >
+                        <span className="block px-5 md:px-10 pt-24 md:pt-28 pb-20">
+                          <span className="block mx-auto max-w-[820px] text-[#141414]">
+                            <GridArticlePageTop book={book} />
+                          </span>
+                        </span>
                       </span>
                     </span>
-                    <span className="page1-foot">
-                      <span>{book.author}</span>
-                      <span>p. 02</span>
-                    </span>
-                  </span>
-                )}
+                  );
+                })()}
 
                 {/* First readable page (hinged recto/verso on GRID so Page 1 physically turns) */}
                 {book.title === 'GRID' ? (
