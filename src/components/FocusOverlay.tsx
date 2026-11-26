@@ -183,7 +183,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
               stroke="#141414"
               aria-hidden="true"
             />
-            <span>Saved</span>
+            <span>Save</span>
           </button>
         </div>
       </aside>

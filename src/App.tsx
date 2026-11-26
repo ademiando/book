@@ -133,7 +133,7 @@ export default function App() {
       window.setTimeout(() => {
         setShelfBumpKey((k) => k + 1);
       }, 980);
-      showToast(`Added “${book.title}” to saved`);
+      showToast(`“${book.title}” successfully saved`);
     },
     [showToast],
   );
@@ -143,7 +143,7 @@ export default function App() {
       const removed = BOOKS.find((b) => b.id === id);
       setShelfIds((prev) => prev.filter((item) => item !== id));
       if (removed) {
-        showToast(`Removed “${removed.title}”`);
+        showToast(`“${removed.title}” Removed`);
       }
     },
     [showToast],
