@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Book } from '../lib/books';
-import { GridArticlePageTop } from './GridArticlePageTop';
+import { GridArticleHeader } from './GridArticlePageTop';
 import { CopyrightLabel, SocialIcons } from './MinimalFooter';
 
 interface GridArticleOverlayProps {
@@ -64,8 +64,8 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   return (
     <div
       ref={ref}
-      className={`transition-[opacity,transform] duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-        revealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+      className={`transition-[opacity,transform] duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-[opacity,transform] ${
+        revealed ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'
       } ${className}`}
       style={{ transitionDelay: revealed && delayMs ? `${delayMs}ms` : '0ms' }}
     >
@@ -84,12 +84,21 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
   const [columnPreset, setColumnPreset] = useState<4 | 8 | 12>(12);
   const [showConstructionLines, setShowConstructionLines] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [bodyReady, setBodyReady] = useState(false);
 
   useEffect(() => {
-    if (isOpen && scrollRef.current) {
+    if (!isOpen) {
+      setBodyReady(false);
+      return;
+    }
+    if (scrollRef.current) {
       scrollRef.current.scrollTop = 0;
       setScrollProgress(0);
     }
+    const timer = window.setTimeout(() => {
+      setBodyReady(true);
+    }, 320);
+    return () => window.clearTimeout(timer);
   }, [isOpen]);
 
   useEffect(() => {
@@ -122,8 +131,8 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
       aria-hidden={!isOpen}
       className={`fixed inset-0 z-[38] overflow-hidden transition-opacity ease-[cubic-bezier(0.22,1,0.36,1)] ${
         isOpen
-          ? 'opacity-100 duration-300 pointer-events-auto'
-          : 'opacity-0 duration-260 pointer-events-none'
+          ? 'opacity-100 duration-[380ms] pointer-events-auto'
+          : 'opacity-0 duration-[280ms] pointer-events-none'
       }`}
       style={{ backgroundColor: '#fbf8f1' }}
     >
@@ -165,17 +174,118 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
         className="relative h-full w-full overflow-y-auto overscroll-contain px-5 md:px-10 pt-24 md:pt-28 pb-20"
       >
         <article className="mx-auto max-w-[820px] text-[#141414]">
-          {/* Identical top viewport layout & typography to zoomed Page 2 — zero glitch handoff */}
-          <GridArticlePageTop
-            book={book}
-            interactive
-            columnPreset={columnPreset}
-            onSelectColumnPreset={setColumnPreset}
-          />
+          {/* Identical top monograph header to zoomed Page 2 — zero glitch handoff */}
+          <GridArticleHeader book={book} />
+
+          {/* Concept I + Interactive Frame 01 — reveals smoothly only AFTER zoom settles */}
+          <section className="mt-12 md:mt-16 space-y-6">
+            <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
+              <div className="flex items-baseline gap-3">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#86827a] tabular-nums">
+                  CONCEPT 01
+                </span>
+                <span className="h-px flex-1 bg-[rgba(20,20,20,0.1)]" />
+              </div>
+
+              <h2
+                className="mt-6 text-[26px] md:text-[34px] leading-[1.06] tracking-[-0.03em] font-semibold"
+                style={{ fontFamily: "'Inter Tight', sans-serif" }}
+              >
+                Structure Before Ornament: The Acoustic Chamber of the Page
+              </h2>
+            </ScrollReveal>
+
+            <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={120}>
+              <div className="grid md:grid-cols-2 gap-6 text-[15px] md:text-[16px] leading-[1.7] text-[#141414]/85">
+                <p className="m-0">
+                  Most designers meet the grid as a set of rules handed down without context: twelve
+                  columns, twenty-pixel gutters, rigid margins. Treated as dogma, a grid produces
+                  uniform boxes that feel mechanical before a single word is placed. Treated as an
+                  acoustic chamber, however, the grid is simply the geometry that lets silence carry
+                  weight.
+                </p>
+                <p className="m-0">
+                  Before setting a headline or cropping an image, Ines Vahl starts with three ratios:
+                  the outer margin breathing room, the gutter width that separates independent thoughts,
+                  and the vertical baseline cadence. Once those intervals are fixed, every element on
+                  the sheet finds its natural resting place without guesswork.
+                </p>
+              </div>
+            </ScrollReveal>
+
+            {/* Frame 01: Interactive Column Ratio Specimen */}
+            <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={160}>
+              <figure className="mt-6 rounded-xl border border-[rgba(20,20,20,0.14)] bg-[#f4f1ea]/90 p-5 md:p-6">
+                <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[rgba(20,20,20,0.1)]">
+                  <div>
+                    <span className="block text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
+                      FRAME 01 · MODULAR RATIO STUDY
+                    </span>
+                    <span className="text-[13px] font-medium text-[#141414]">
+                      Interactive {columnPreset}-Column Page Matrix (Margin 1 : Gutter 0.38)
+                    </span>
+                  </div>
+                  <div className="inline-flex items-center gap-1 rounded-full border border-[rgba(20,20,20,0.12)] bg-[#fbf8f1] p-1">
+                    {([4, 8, 12] as const).map((cols) => (
+                      <button
+                        key={cols}
+                        type="button"
+                        onClick={() => setColumnPreset(cols)}
+                        className={`px-2.5 py-1 rounded-full text-[11px] font-medium tabular-nums transition-colors cursor-pointer ${
+                          columnPreset === cols
+                            ? 'bg-[#141414] text-[#f4f1ea]'
+                            : 'text-[#141414]/75 hover:text-[#141414]'
+                        }`}
+                      >
+                        {cols} col
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-5 relative rounded-lg border border-[rgba(20,20,20,0.12)] bg-[#fbf8f1] p-4 md:p-6 overflow-hidden">
+                  <div
+                    className="grid gap-2 md:gap-2.5 h-36 md:h-44"
+                    style={{ gridTemplateColumns: `repeat(${columnPreset}, minmax(0, 1fr))` }}
+                  >
+                    {Array.from({ length: columnPreset }).map((_, idx) => (
+                      <div
+                        key={idx}
+                        className="relative rounded-[3px] border border-dashed border-[rgba(20,20,20,0.18)] bg-[rgba(20,20,20,0.03)] flex flex-col justify-between p-1.5"
+                      >
+                        <span className="text-[9px] tabular-nums text-[#86827a]">
+                          {String(idx + 1).padStart(2, '0')}
+                        </span>
+                        {idx < Math.floor(columnPreset / 2) && (
+                          <span className="h-2.5 rounded-[2px] bg-[#141414]/80" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-12 gap-2.5 text-[11px] tabular-nums text-[#86827a]">
+                    <div className="col-span-5 rounded-[4px] bg-[#141414] text-[#f4f1ea] px-3 py-2 flex items-center justify-between">
+                      <span>Primary Mass</span>
+                      <span>{Math.round((5 / 12) * 100)}%</span>
+                    </div>
+                    <div className="col-span-7 rounded-[4px] border border-[rgba(20,20,20,0.2)] px-3 py-2 flex items-center justify-between text-[#141414]">
+                      <span>Editorial Field &amp; Counter-Margin</span>
+                      <span>{Math.round((7 / 12) * 100)}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <figcaption className="mt-3 text-[12px] text-[#86827a] leading-relaxed">
+                  Notice how subdividing from 4 to 12 columns increases placement granularity without
+                  changing the outer margin discipline.
+                </figcaption>
+              </figure>
+            </ScrollReveal>
+          </section>
 
           {/* Concept II + Frame 02: Reconstructed Swiss Timetable */}
           <section className="mt-14 md:mt-20 space-y-6">
-            <ScrollReveal scrollRoot={scrollEl} active={isOpen}>
+            <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
               <div className="flex items-baseline gap-3">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#86827a] tabular-nums">
                   CONCEPT 02
@@ -200,7 +310,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
             </ScrollReveal>
 
             {/* Frame 02: Timetable Reconstruction Specimen */}
-            <ScrollReveal scrollRoot={scrollEl} active={isOpen} delayMs={100}>
+            <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={100}>
               <figure className="rounded-xl border border-[rgba(20,20,20,0.14)] bg-[#f4f1ea]/90 p-5 md:p-6">
               <div className="flex items-center justify-between pb-3 border-b border-[rgba(20,20,20,0.12)]">
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
@@ -253,7 +363,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
 
           {/* Concept III + Frame 03: Asymmetric Tension */}
           <section className="mt-14 md:mt-20 space-y-6">
-            <ScrollReveal scrollRoot={scrollEl} active={isOpen}>
+            <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
               <div className="flex items-baseline gap-3">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#86827a] tabular-nums">
                   CONCEPT 03
@@ -278,7 +388,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
             </ScrollReveal>
 
             {/* Pull Quote */}
-            <ScrollReveal scrollRoot={scrollEl} active={isOpen} delayMs={80}>
+            <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={80}>
               <blockquote className="my-8 border-l-2 border-[#141414] pl-5 md:pl-7 py-1">
                 <p
                   className="m-0 text-[20px] md:text-[26px] leading-[1.25] tracking-[-0.025em] font-medium text-[#141414]"
@@ -294,7 +404,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
             </ScrollReveal>
 
             {/* Frame 03: Spread Comparison Frame */}
-            <ScrollReveal scrollRoot={scrollEl} active={isOpen} delayMs={110}>
+            <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={110}>
               <figure className="rounded-xl border border-[rgba(20,20,20,0.14)] bg-[#f4f1ea]/90 p-5 md:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[rgba(20,20,20,0.1)]">
                 <div>
@@ -391,7 +501,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
 
           {/* Concept IV + Frame 04: Scale Matrix */}
           <section className="mt-14 md:mt-20 space-y-6">
-            <ScrollReveal scrollRoot={scrollEl} active={isOpen}>
+            <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
               <div className="flex items-baseline gap-3">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#86827a] tabular-nums">
                   CONCEPT 04
@@ -416,7 +526,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
             </ScrollReveal>
 
             {/* Frame 04: Scale Matrix */}
-            <ScrollReveal scrollRoot={scrollEl} active={isOpen} delayMs={100}>
+            <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={100}>
               <figure className="rounded-xl border border-[rgba(20,20,20,0.14)] bg-[#f4f1ea]/90 p-5 md:p-6">
               <div className="pb-3 border-b border-[rgba(20,20,20,0.1)] flex items-center justify-between">
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
@@ -457,7 +567,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
           </section>
 
           {/* Closing Colophon & Distinct Close Action */}
-          <ScrollReveal scrollRoot={scrollEl} active={isOpen}>
+          <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
             <footer className="mt-14 md:mt-18 pt-8 border-t border-[rgba(20,20,20,0.14)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">

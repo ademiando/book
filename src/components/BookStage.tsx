@@ -18,8 +18,9 @@ import {
   getBookDimensions,
   getMobileGridMetrics,
   integrateBookSpring,
+  isBookPoseSettled,
 } from '../lib/physics';
-import { GridArticlePageTop } from './GridArticlePageTop';
+import { GridArticleHeader } from './GridArticlePageTop';
 
 const STAGE_PERSPECTIVE = 1900;
 
@@ -36,6 +37,7 @@ interface BookStageProps {
   onToggleSample: () => void;
   onCloseFocus: () => void;
   onThrowToast: () => void;
+  onArticleZoomSettled?: () => void;
   onMobileGridHeightChange?: (height: number | null) => void;
 }
 
@@ -66,6 +68,7 @@ export const BookStage: React.FC<BookStageProps> = ({
   onToggleSample,
   onCloseFocus,
   onThrowToast,
+  onArticleZoomSettled,
   onMobileGridHeightChange,
 }) => {
   const stageRef = useRef<HTMLDivElement>(null);
@@ -91,6 +94,7 @@ export const BookStage: React.FC<BookStageProps> = ({
     onToggleSample,
     onCloseFocus,
     onThrowToast,
+    onArticleZoomSettled,
     onMobileGridHeightChange,
   });
   propsRef.current = {
@@ -103,6 +107,7 @@ export const BookStage: React.FC<BookStageProps> = ({
     onToggleSample,
     onCloseFocus,
     onThrowToast,
+    onArticleZoomSettled,
     onMobileGridHeightChange,
   };
 
@@ -120,12 +125,20 @@ export const BookStage: React.FC<BookStageProps> = ({
   const prevShuffleRef = useRef<number>(shuffleNonce);
   const layoutTransitionUntilRef = useRef<number>(0);
   const articleTransitionUntilRef = useRef<number>(0);
+  const zoomStartAtRef = useRef<number>(0);
+  const zoomSettledEmittedRef = useRef<boolean>(false);
 
   // Engage smooth cinematic zoom spring when GRID article opens or closes
   useEffect(() => {
     if (prevArticlePhaseRef.current !== articlePhase) {
       prevArticlePhaseRef.current = articlePhase;
-      articleTransitionUntilRef.current = performance.now() + 1800;
+      articleTransitionUntilRef.current = performance.now() + 2800;
+      if (articlePhase === 'zooming') {
+        zoomStartAtRef.current = performance.now();
+        zoomSettledEmittedRef.current = false;
+      } else {
+        zoomSettledEmittedRef.current = false;
+      }
     }
   }, [articlePhase]);
 
@@ -327,7 +340,7 @@ export const BookStage: React.FC<BookStageProps> = ({
     let lastReportedGridH: number | null = null;
 
     const tick = (now: number) => {
-      const dt = Math.min((now - prevTime) / 1000, 0.033);
+      const dt = Math.min((now - prevTime) / 1000, 0.06);
       prevTime = now;
       const elapsed = (now - startTime) / 1000;
 
@@ -456,7 +469,7 @@ export const BookStage: React.FC<BookStageProps> = ({
                 x: dims.isMobile
                   ? w * 0.54
                   : w * 0.5 + dims.bw * previewScale * 0.14,
-                y: h * 0.5,
+                y: dims.isMobile ? h * 0.4 : h * 0.5,
                 z: 145,
                 rx: 0,
                 ry: 0,
@@ -520,6 +533,18 @@ export const BookStage: React.FC<BookStageProps> = ({
           integrateBookSpring(state, target, dt, activeSpringConfig);
         }
 
+        if (
+          currentArticlePhase === 'zooming' &&
+          book.title === 'GRID' &&
+          i === focusIdx &&
+          !zoomSettledEmittedRef.current &&
+          now - zoomStartAtRef.current >= 500 &&
+          isBookPoseSettled(state, target)
+        ) {
+          zoomSettledEmittedRef.current = true;
+          propsRef.current.onArticleZoomSettled?.();
+        }
+
         const p = state.p;
         const tx = p.x - dims.bw * 0.5;
         const ty = p.y - dims.bh * 0.5;
@@ -531,6 +556,7 @@ export const BookStage: React.FC<BookStageProps> = ({
         bookEl.style.setProperty('--gx', `${(p.ry * 2.2).toFixed(1)}px`);
         bookEl.style.pointerEvents = clampedO > 0.15 ? 'auto' : 'none';
         bookEl.classList.toggle('is-article-turning', Boolean(isArticleTurning && book.title === 'GRID' && i === focusIdx));
+        bookEl.classList.toggle('is-article-zooming', Boolean(articleZoomed && book.title === 'GRID' && i === focusIdx));
 
         const lift = Math.max(0, p.z);
         const sx = tx + 10 + lift * 0.22;
@@ -745,7 +771,7 @@ export const BookStage: React.FC<BookStageProps> = ({
                       >
                         <span className="block px-5 md:px-10 pt-24 md:pt-28 pb-20">
                           <span className="block mx-auto max-w-[820px] text-[#141414]">
-                            <GridArticlePageTop book={book} />
+                            <GridArticleHeader book={book} />
                           </span>
                         </span>
                       </span>

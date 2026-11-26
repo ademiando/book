@@ -68,26 +68,26 @@ export const MORPH_SPRING: SpringConfig = {
 
 export const ARTICLE_SPRING: SpringConfig = {
   stiffness: {
-    x: 56,
-    y: 56,
-    z: 60,
-    rx: 68,
-    ry: 68,
-    rz: 68,
-    s: 52,
-    o: 80,
-    open: 64,
+    x: 76,
+    y: 76,
+    z: 80,
+    rx: 84,
+    ry: 84,
+    rz: 84,
+    s: 74,
+    o: 90,
+    open: 78,
   },
   damping: {
-    x: 15.2,
-    y: 15.2,
-    z: 15.6,
-    rx: 16.6,
-    ry: 16.6,
-    rz: 16.6,
-    s: 14.6,
-    o: 18,
-    open: 16.2,
+    x: 17.4,
+    y: 17.4,
+    z: 17.9,
+    rx: 18.3,
+    ry: 18.3,
+    rz: 18.3,
+    s: 17.2,
+    o: 19,
+    open: 17.6,
   },
 };
 
@@ -116,10 +116,10 @@ export function integrateBookSpring(
   dtRaw: number,
   config: SpringConfig = DEFAULT_SPRING,
 ): void {
-  const dt = Math.min(Math.max(dtRaw, 0), 0.033);
+  const dt = Math.min(Math.max(dtRaw, 0), 0.06);
   if (dt === 0) return;
 
-  const substeps = 4;
+  const substeps = dt > 0.033 ? 6 : 4;
   const h = dt / substeps;
 
   for (let step = 0; step < substeps; step += 1) {
@@ -133,6 +133,21 @@ export function integrateBookSpring(
       state.p[prop] += state.v[prop] * h;
     }
   }
+}
+
+export function isBookPoseSettled(state: BookSpringState, target: BookPose): boolean {
+  return (
+    Math.abs(state.p.x - target.x) <= 1.2 &&
+    Math.abs(state.p.y - target.y) <= 1.2 &&
+    Math.abs(state.p.z - target.z) <= 1.5 &&
+    Math.abs(state.p.s - target.s) <= 0.022 &&
+    Math.abs(state.p.rx - target.rx) <= 0.5 &&
+    Math.abs(state.p.ry - target.ry) <= 0.5 &&
+    Math.abs(state.p.rz - target.rz) <= 0.5 &&
+    Math.abs(state.v.x) <= 14 &&
+    Math.abs(state.v.y) <= 14 &&
+    Math.abs(state.v.s) <= 0.16
+  );
 }
 
 export interface BookDimensions {

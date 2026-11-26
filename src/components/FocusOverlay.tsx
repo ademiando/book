@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Bookmark, X } from 'lucide-react';
+import { ArrowLeft, Bookmark, X } from 'lucide-react';
 import { Book, getBookCoverUrl } from '../lib/books';
 import { computeFocusBookTarget, getBookDimensions } from '../lib/physics';
 import type { ArticlePhase } from './BookStage';
@@ -112,7 +112,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
 
   return (
     <>
-      {/* Top-left round black close button with smooth rotating X appear & shrink-to-zero exit */}
+      {/* Top-left round black close/back button with smooth morph between X and back arrow */}
       <button
         type="button"
         onClick={() => {
@@ -122,7 +122,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
             onClose();
           }
         }}
-        aria-label={isArticleDismissible ? 'Close excerpt article' : 'Close book focus view'}
+        aria-label={isArticleDismissible ? 'Back to book spread' : 'Close book focus view'}
         aria-hidden={!isOpen}
         tabIndex={isOpen ? 0 : -1}
         className={`group fixed top-4 left-4 md:top-6 md:left-7 z-40 w-10 h-10 rounded-full bg-[#141414] text-[#f4f1ea] inline-flex items-center justify-center shadow-[0_8px_20px_rgba(20,20,20,0.2)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
@@ -131,11 +131,26 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
             : 'opacity-0 scale-0 pointer-events-none'
         }`}
       >
-        <X
-          className={`w-4 h-4 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
-            isOpen ? 'rotate-0 scale-100 group-hover:rotate-90' : '-rotate-180 scale-50'
-          }`}
-        />
+        <span className="relative w-4 h-4 inline-flex items-center justify-center">
+          <X
+            aria-hidden="true"
+            className={`absolute inset-0 m-auto w-4 h-4 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              !isOpen
+                ? 'opacity-0 -rotate-180 scale-50'
+                : isArticleDismissible
+                  ? 'opacity-0 -rotate-90 scale-50'
+                  : 'opacity-100 rotate-0 scale-100 group-hover:rotate-90'
+            }`}
+          />
+          <ArrowLeft
+            aria-hidden="true"
+            className={`absolute inset-0 m-auto w-4 h-4 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              isOpen && isArticleDismissible
+                ? 'opacity-100 rotate-0 translate-x-0 scale-100 group-hover:-translate-x-0.5'
+                : 'opacity-0 rotate-90 translate-x-1.5 scale-50'
+            }`}
+          />
+        </span>
       </button>
 
       {book && (
@@ -276,11 +291,15 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
       </div>
 
       {/* Bottom row: thin copyright footer & monochrome social icons */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 px-4 pb-3.5 md:px-7 md:pb-6 flex items-center justify-between">
-        <div className="pointer-events-auto">
+      <div
+        className={`pointer-events-none fixed inset-x-0 bottom-0 px-4 pb-3.5 md:px-7 md:pb-6 flex items-center justify-between transition-opacity duration-300 ease-out ${
+          showArticle ? 'opacity-0' : 'opacity-100'
+        }`}
+      >
+        <div className={showArticle ? 'pointer-events-none' : 'pointer-events-auto'}>
           <CopyrightLabel />
         </div>
-        <div className="pointer-events-auto">
+        <div className={showArticle ? 'pointer-events-none' : 'pointer-events-auto'}>
           <SocialIcons />
         </div>
       </div>

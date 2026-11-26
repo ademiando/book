@@ -19,6 +19,7 @@ import {
   createBookSpringState,
   getBookDimensions,
   integrateBookSpring,
+  isBookPoseSettled,
   sampleRingAt,
 } from './physics';
 
@@ -148,6 +149,34 @@ test('spring integration converges smoothly to target pose', () => {
     assert.ok(articleState.p.s <= articleTarget.s + 0.05);
   }
   assert.ok(Math.abs(articleState.p.s - articleTarget.s) < 0.06);
+
+  const mobileArticleState = createBookSpringState({
+    x: 210,
+    y: 337,
+    z: 145,
+    rx: 0,
+    ry: 0,
+    rz: 0,
+    s: 1.12,
+    o: 1,
+    open: 0.98,
+  });
+  const mobileArticleTarget = {
+    x: 195,
+    y: 276,
+    z: 120,
+    rx: 0,
+    ry: 0,
+    rz: 0,
+    s: 2.98,
+    o: 1,
+    open: 0.98,
+  };
+  assert.equal(isBookPoseSettled(mobileArticleState, mobileArticleTarget), false);
+  for (let frame = 0; frame < 110; frame += 1) {
+    integrateBookSpring(mobileArticleState, mobileArticleTarget, 1 / 60, ARTICLE_SPRING);
+  }
+  assert.equal(isBookPoseSettled(mobileArticleState, mobileArticleTarget), true);
 });
 
 test('top clearance lifts and shrinks books crossing top center', () => {

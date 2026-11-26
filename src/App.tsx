@@ -97,15 +97,21 @@ export default function App() {
     }
   }, []);
 
+  const handleArticleZoomSettled = useCallback(() => {
+    clearArticleTimer();
+    setArticlePhase((curr) => (curr === 'zooming' ? 'open' : curr));
+  }, [clearArticleTimer]);
+
   const openArticle = useCallback(() => {
     clearArticleTimer();
     setArticlePhase('turning');
     articleTimerRef.current = window.setTimeout(() => {
       setArticlePhase('zooming');
+      // Fallback safety cap in case backgrounded tab throttles rAF; normal handoff fires via onArticleZoomSettled
       articleTimerRef.current = window.setTimeout(() => {
-        setArticlePhase('open');
+        setArticlePhase((curr) => (curr === 'zooming' ? 'open' : curr));
         articleTimerRef.current = null;
-      }, 960);
+      }, 2600);
     }, 560);
   }, [clearArticleTimer]);
 
@@ -242,6 +248,7 @@ export default function App() {
         onToggleSample={handleToggleSample}
         onCloseFocus={closeFocus}
         onThrowToast={handleThrowToast}
+        onArticleZoomSettled={handleArticleZoomSettled}
         onMobileGridHeightChange={setMobileGridHeight}
       />
 
