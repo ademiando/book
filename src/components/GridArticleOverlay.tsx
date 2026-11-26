@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Book } from '../lib/books';
+import { getBookSampleSections } from '../lib/articles';
 import { GridArticleHeader } from './GridArticlePageTop';
 import { CopyrightLabel, SocialIcons } from './MinimalFooter';
 
@@ -114,7 +115,10 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [isOpen, onClose]);
 
-  if (!book || book.title !== 'GRID') return null;
+  if (!book) return null;
+
+  const isGridBook = book.title === 'GRID';
+  const sampleContent = isGridBook ? null : getBookSampleSections(book);
 
   const handleScroll = () => {
     const el = scrollRef.current;
@@ -177,8 +181,10 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
           {/* Identical top monograph header to zoomed Page 2 — zero glitch handoff */}
           <GridArticleHeader book={book} />
 
-          {/* Concept I + Interactive Frame 01 — reveals smoothly only AFTER zoom settles */}
-          <section className="mt-12 md:mt-16 space-y-6">
+          {isGridBook ? (
+            <>
+              {/* Concept I + Interactive Frame 01 — reveals smoothly only AFTER zoom settles */}
+              <section className="mt-12 md:mt-16 space-y-6">
             <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
               <div className="flex items-baseline gap-3">
                 <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#86827a] tabular-nums">
@@ -565,6 +571,98 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
               </figure>
             </ScrollReveal>
           </section>
+            </>
+          ) : sampleContent ? (
+            <>
+              <section className="mt-12 md:mt-16 space-y-6">
+                <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#86827a] tabular-nums">
+                      {sampleContent.section1Tag}
+                    </span>
+                    <span className="h-px flex-1 bg-[rgba(20,20,20,0.1)]" />
+                  </div>
+
+                  <h2
+                    className="mt-6 text-[26px] md:text-[34px] leading-[1.06] tracking-[-0.03em] font-semibold"
+                    style={{ fontFamily: "'Inter Tight', sans-serif" }}
+                  >
+                    {sampleContent.section1Title}
+                  </h2>
+                </ScrollReveal>
+
+                <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={120}>
+                  <div className="grid md:grid-cols-2 gap-6 text-[15px] md:text-[16px] leading-[1.7] text-[#141414]/85">
+                    <p className="m-0">{sampleContent.section1Paragraphs[0]}</p>
+                    <p className="m-0">{sampleContent.section1Paragraphs[1]}</p>
+                  </div>
+                </ScrollReveal>
+
+                <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={140}>
+                  <blockquote className="my-8 border-l-2 border-[#141414] pl-5 md:pl-7 py-1">
+                    <p
+                      className="m-0 text-[20px] md:text-[26px] leading-[1.25] tracking-[-0.025em] font-medium text-[#141414]"
+                      style={{ fontFamily: "'Inter Tight', sans-serif" }}
+                    >
+                      {sampleContent.quote}
+                    </p>
+                    <footer className="mt-2.5 text-[12px] text-[#86827a]">
+                      {sampleContent.quoteSource}
+                    </footer>
+                  </blockquote>
+                </ScrollReveal>
+              </section>
+
+              <section className="mt-12 md:mt-16 space-y-6">
+                <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#86827a] tabular-nums">
+                      {sampleContent.section2Tag}
+                    </span>
+                    <span className="h-px flex-1 bg-[rgba(20,20,20,0.1)]" />
+                  </div>
+
+                  <h2
+                    className="mt-6 text-[24px] md:text-[30px] leading-[1.08] tracking-[-0.03em] font-semibold"
+                    style={{ fontFamily: "'Inter Tight', sans-serif" }}
+                  >
+                    {sampleContent.section2Title}
+                  </h2>
+
+                  <p className="mt-4 text-[15px] md:text-[16px] leading-[1.75] text-[#141414]/85">
+                    {sampleContent.section2Paragraph}
+                  </p>
+                </ScrollReveal>
+
+                <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={100}>
+                  <figure className="rounded-xl border border-[rgba(20,20,20,0.14)] bg-[#f4f1ea]/90 p-5 md:p-6">
+                    <div className="flex items-center justify-between pb-3 border-b border-[rgba(20,20,20,0.1)]">
+                      <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
+                        {sampleContent.specimenTag}
+                      </span>
+                      <span className="text-[11px] font-medium text-[#141414]">
+                        {sampleContent.specimenLabel}
+                      </span>
+                    </div>
+
+                    <div className="mt-4 grid sm:grid-cols-3 gap-3 text-[12px]">
+                      {sampleContent.specimenHighlights.map((item) => (
+                        <div
+                          key={item.label}
+                          className="rounded-lg bg-[#fbf8f1] border border-[rgba(20,20,20,0.1)] px-3.5 py-3"
+                        >
+                          <span className="block font-semibold text-[#141414]">{item.label}</span>
+                          <span className="block mt-1 text-[#86827a] leading-relaxed">
+                            {item.detail}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </figure>
+                </ScrollReveal>
+              </section>
+            </>
+          ) : null}
 
           {/* Closing Colophon & Distinct Close Action */}
           <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>

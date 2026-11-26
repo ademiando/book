@@ -48,9 +48,8 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
   useEffect(() => {
     if (!book) return;
     const isArticleActive =
-      book.title === 'GRID' &&
-      (articlePhase === 'turning' || articlePhase === 'zooming' || articlePhase === 'open');
-    const isAnyArticlePhase = book.title === 'GRID' && articlePhase !== 'closed';
+      articlePhase === 'turning' || articlePhase === 'zooming' || articlePhase === 'open';
+    const isAnyArticlePhase = articlePhase !== 'closed';
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -72,11 +71,9 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
   }, [book, articlePhase, onClose, onCloseArticle, onPrev, onNext]);
 
   const isOpen = Boolean(book);
-  const isGridBook = book?.title === 'GRID';
-  const showArticle = Boolean(isGridBook && articlePhase !== 'closed');
+  const showArticle = Boolean(book && articlePhase !== 'closed');
   const isArticleDismissible = Boolean(
-    isGridBook &&
-      (articlePhase === 'turning' || articlePhase === 'zooming' || articlePhase === 'open'),
+    book && (articlePhase === 'turning' || articlePhase === 'zooming' || articlePhase === 'open'),
   );
 
   const dims = getBookDimensions(viewport.w);
@@ -204,10 +201,10 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
         <div className="mt-5 md:mt-7 flex flex-wrap items-center gap-2.5">
           <button
             type="button"
-            onClick={isGridBook ? onOpenArticle : onToggleSample}
+            onClick={onOpenArticle}
             className="h-11 px-5 rounded-full bg-[#141414] text-[#f4f1ea] text-[13px] font-medium hover:bg-[#2a2a2a] transition-colors cursor-pointer whitespace-nowrap"
           >
-            {isGridBook ? 'Read excerpt' : isSampleOpen ? 'Close excerpt' : 'Read excerpt'}
+            Read excerpt
           </button>
 
           <button

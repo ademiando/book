@@ -290,7 +290,7 @@ export default function App() {
 
       <GridArticleOverlay
         book={focusedBook}
-        isOpen={Boolean(focusedBook?.title === 'GRID' && articlePhase === 'open')}
+        isOpen={Boolean(focusedBook && articlePhase === 'open')}
         onClose={closeArticle}
       />
 

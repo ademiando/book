@@ -442,7 +442,7 @@ export const BookStage: React.FC<BookStageProps> = ({
           };
         } else if (focusIdx !== null) {
           if (i === focusIdx) {
-            if (articleZoomed && book.title === 'GRID') {
+            if (articleZoomed) {
               const targetZ = 120;
               const page2LocalZ = dims.d * 0.5 - 2.8;
               const persp =
@@ -461,7 +461,7 @@ export const BookStage: React.FC<BookStageProps> = ({
                 o: 1,
                 open: 0.98,
               };
-            } else if (currentArticlePhase === 'turning' && book.title === 'GRID') {
+            } else if (currentArticlePhase === 'turning') {
               const previewScale = dims.isMobile
                 ? Math.min(1.12, (0.34 * h) / dims.bh)
                 : Math.min(1.72, (0.62 * h) / dims.bh);
@@ -535,7 +535,6 @@ export const BookStage: React.FC<BookStageProps> = ({
 
         if (
           currentArticlePhase === 'zooming' &&
-          book.title === 'GRID' &&
           i === focusIdx &&
           !zoomSettledEmittedRef.current &&
           now - zoomStartAtRef.current >= 500 &&
@@ -555,8 +554,8 @@ export const BookStage: React.FC<BookStageProps> = ({
         bookEl.style.setProperty('--open', `${Math.max(0, Math.min(1, p.open)).toFixed(4)}`);
         bookEl.style.setProperty('--gx', `${(p.ry * 2.2).toFixed(1)}px`);
         bookEl.style.pointerEvents = clampedO > 0.15 ? 'auto' : 'none';
-        bookEl.classList.toggle('is-article-turning', Boolean(isArticleTurning && book.title === 'GRID' && i === focusIdx));
-        bookEl.classList.toggle('is-article-zooming', Boolean(articleZoomed && book.title === 'GRID' && i === focusIdx));
+        bookEl.classList.toggle('is-article-turning', Boolean(isArticleTurning && i === focusIdx));
+        bookEl.classList.toggle('is-article-zooming', Boolean(articleZoomed && i === focusIdx));
 
         const lift = Math.max(0, p.z);
         const sx = tx + 10 + lift * 0.22;
@@ -732,8 +731,8 @@ export const BookStage: React.FC<BookStageProps> = ({
                   />
                 </span>
 
-                {/* Page 2 (exact scaled replica of GridArticlePageTop for zero-glitch transition) */}
-                {book.title === 'GRID' && (() => {
+                {/* Page 2 (exact scaled replica of GridArticleHeader for zero-glitch transition) */}
+                {activeBookIndex === idx && (() => {
                   const page2Dims = getBookDimensions(viewport.w);
                   const isPage2Zoomed =
                     articlePhase === 'zooming' ||
@@ -779,32 +778,9 @@ export const BookStage: React.FC<BookStageProps> = ({
                   );
                 })()}
 
-                {/* First readable page (hinged recto/verso on GRID so Page 1 physically turns) */}
-                {book.title === 'GRID' ? (
-                  <span className="face page1 page1-turnable">
-                    <span className="page1-recto">
-                      <span>
-                        <span className="block page1-kicker">
-                          {book.category} · {book.year}
-                        </span>
-                        <span className="block page1-title">{book.title}</span>
-                        <span className="block page1-note">{book.note}</span>
-                      </span>
-                      <span className="page1-foot">
-                        <span>{book.author}</span>
-                        <span>p. 01</span>
-                      </span>
-                    </span>
-                    <span className="page1-verso" aria-hidden="true">
-                      <span className="block page1-kicker">FIG. 01 · SPINE MARGIN</span>
-                      <span className="page1-foot">
-                        <span>60 RECONSTRUCTED LAYOUTS</span>
-                        <span>i</span>
-                      </span>
-                    </span>
-                  </span>
-                ) : (
-                  <span className="face page1">
+                {/* First readable page (hinged recto/verso on all books so Page 1 physically turns) */}
+                <span className="face page1 page1-turnable">
+                  <span className="page1-recto">
                     <span>
                       <span className="block page1-kicker">
                         {book.category} · {book.year}
@@ -817,7 +793,18 @@ export const BookStage: React.FC<BookStageProps> = ({
                       <span>p. 01</span>
                     </span>
                   </span>
-                )}
+                  <span className="page1-verso" aria-hidden="true">
+                    <span className="block page1-kicker">FIG. 01 · SPINE MARGIN</span>
+                    <span className="page1-foot">
+                      <span>
+                        {book.title === 'GRID'
+                          ? '60 RECONSTRUCTED LAYOUTS'
+                          : `${book.pages} PAGES · ${book.year}`}
+                      </span>
+                      <span>i</span>
+                    </span>
+                  </span>
+                </span>
 
                 {/* Back cover */}
                 <span

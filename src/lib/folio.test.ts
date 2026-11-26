@@ -9,6 +9,7 @@ import {
   getHighlightSegments,
   matchesQuery,
 } from './books';
+import { getBookArticleHeaderData, getBookSampleSections } from './articles';
 import {
   ARTICLE_SPRING,
   MORPH_SPRING,
@@ -267,4 +268,22 @@ test('grid and focus targets compute valid bounds on desktop and mobile', () => 
   assert.ok(row0Mobile.y - (mobileDims.bh * row0Mobile.s) / 2 >= 399);
   assert.equal(row0Mobile.x, row1Mobile.x);
   assert.ok(row1Mobile.y > row0Mobile.y);
+});
+
+test('all 12 books provide article header metadata and non-empty sample excerpt content', () => {
+  for (const book of BOOKS) {
+    const header = getBookArticleHeaderData(book);
+    assert.ok(header.kickerLeft.length > 0);
+    assert.ok(header.kickerRight.length > 0);
+    assert.ok(header.headline.length > 0);
+    assert.ok(header.intro.includes(book.note));
+
+    if (book.title !== 'GRID') {
+      const sample = getBookSampleSections(book);
+      assert.ok(sample.section1Title.length > 0);
+      assert.equal(sample.section1Paragraphs.length, 2);
+      assert.ok(sample.quote.length > 0);
+      assert.equal(sample.specimenHighlights.length, 3);
+    }
+  }
 });
