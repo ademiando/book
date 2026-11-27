@@ -23,6 +23,347 @@ export interface SampleArticleContent {
   specimenHighlights: Array<{ label: string; detail: string }>;
 }
 
+export type BookArticleSpecimenKind =
+  | 'grid-monograph'
+  | 'loud-crop'
+  | 'marks-scale'
+  | 'identity-material'
+  | 'matter-legibility'
+  | 'weather-climate'
+  | 'small-edit'
+  | 'quiet-rhythm'
+  | 'colour-triad'
+  | 'motion-curve'
+  | 'honest-measure'
+  | 'signal-focus';
+
+export interface BookArticleTheme {
+  isDark: boolean;
+  bg: string;
+  bgRgb: string;
+  surface: string;
+  cardBg: string;
+  ink: string;
+  inkSoft: string;
+  muted: string;
+  line: string;
+  lineStrong: string;
+  accent: string;
+  accentInk: string;
+  patternBg: string;
+  patternSize: string;
+  patternOpacity: number;
+  displayFont: string;
+  bodyFont: string;
+  monoFont: string;
+  headlineUppercase?: boolean;
+  headlineItalic?: boolean;
+  headlineTracking?: string;
+  maxWidthClass: string;
+  useDropCap?: boolean;
+  specimenKind: BookArticleSpecimenKind;
+}
+
+const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
+  GRID: {
+    isDark: false,
+    bg: '#fbf8f1',
+    bgRgb: '251, 248, 241',
+    surface: 'rgba(244, 241, 234, 0.9)',
+    cardBg: '#fbf8f1',
+    ink: '#141414',
+    inkSoft: 'rgba(20, 20, 20, 0.85)',
+    muted: '#86827a',
+    line: 'rgba(20, 20, 20, 0.12)',
+    lineStrong: 'rgba(20, 20, 20, 0.22)',
+    accent: '#141414',
+    accentInk: '#f4f1ea',
+    patternBg:
+      'linear-gradient(to right, rgba(20,20,20,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(20,20,20,0.06) 1px, transparent 1px)',
+    patternSize: '48px 48px',
+    patternOpacity: 0.28,
+    displayFont: "'Inter Tight', sans-serif",
+    bodyFont: "'Inter', sans-serif",
+    monoFont: "'IBM Plex Mono', monospace",
+    headlineTracking: '-0.04em',
+    maxWidthClass: 'max-w-[820px]',
+    specimenKind: 'grid-monograph',
+  },
+  LOUD: {
+    isDark: false,
+    bg: '#f7f1e6',
+    bgRgb: '247, 241, 230',
+    surface: '#efe6d5',
+    cardBg: '#fbf8f2',
+    ink: '#161310',
+    inkSoft: 'rgba(22, 19, 16, 0.86)',
+    muted: '#736556',
+    line: 'rgba(22, 19, 16, 0.15)',
+    lineStrong: 'rgba(242, 107, 29, 0.48)',
+    accent: '#f26b1d',
+    accentInk: '#ffffff',
+    patternBg:
+      'radial-gradient(rgba(242, 107, 29, 0.14) 1px, transparent 1px)',
+    patternSize: '18px 18px',
+    patternOpacity: 0.4,
+    displayFont: "'Oswald', sans-serif",
+    bodyFont: "'DM Sans', sans-serif",
+    monoFont: "'Space Mono', monospace",
+    headlineUppercase: true,
+    headlineTracking: '-0.015em',
+    maxWidthClass: 'max-w-[840px]',
+    specimenKind: 'loud-crop',
+  },
+  'Rules of Marks': {
+    isDark: false,
+    bg: '#f5f0e6',
+    bgRgb: '245, 240, 230',
+    surface: '#ebe4d5',
+    cardBg: '#fbf8f1',
+    ink: '#141724',
+    inkSoft: 'rgba(20, 23, 36, 0.85)',
+    muted: '#5f677a',
+    line: 'rgba(31, 79, 214, 0.16)',
+    lineStrong: 'rgba(31, 79, 214, 0.36)',
+    accent: '#1f4fd6',
+    accentInk: '#ffffff',
+    patternBg:
+      'radial-gradient(circle at 1px 1px, rgba(31, 79, 214, 0.13) 1px, transparent 0)',
+    patternSize: '28px 28px',
+    patternOpacity: 0.45,
+    displayFont: "'Bricolage Grotesque', sans-serif",
+    bodyFont: "'Plus Jakarta Sans', sans-serif",
+    monoFont: "'IBM Plex Mono', monospace",
+    headlineTracking: '-0.035em',
+    maxWidthClass: 'max-w-[800px]',
+    specimenKind: 'marks-scale',
+  },
+  'Shaping Identity': {
+    isDark: true,
+    bg: '#152e24',
+    bgRgb: '21, 46, 36',
+    surface: '#1d3c30',
+    cardBg: '#12271e',
+    ink: '#efe6d4',
+    inkSoft: 'rgba(239, 230, 212, 0.85)',
+    muted: '#a4b5ab',
+    line: 'rgba(239, 230, 212, 0.14)',
+    lineStrong: 'rgba(212, 180, 117, 0.45)',
+    accent: '#d4b475',
+    accentInk: '#152e24',
+    patternBg:
+      'linear-gradient(to right, rgba(239,230,212,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(239,230,212,0.04) 1px, transparent 1px)',
+    patternSize: '64px 64px',
+    patternOpacity: 0.5,
+    displayFont: "'Fraunces', serif",
+    bodyFont: "'Plus Jakarta Sans', sans-serif",
+    monoFont: "'IBM Plex Mono', monospace",
+    headlineTracking: '-0.03em',
+    maxWidthClass: 'max-w-[780px]',
+    useDropCap: true,
+    specimenKind: 'identity-material',
+  },
+  'Make it Matter': {
+    isDark: false,
+    bg: '#f4f0fa',
+    bgRgb: '244, 240, 250',
+    surface: '#eae2f5',
+    cardBg: '#faf8fd',
+    ink: '#181523',
+    inkSoft: 'rgba(24, 21, 35, 0.86)',
+    muted: '#655c7d',
+    line: 'rgba(91, 63, 214, 0.14)',
+    lineStrong: 'rgba(91, 63, 214, 0.34)',
+    accent: '#5b3fd6',
+    accentInk: '#ffffff',
+    patternBg:
+      'linear-gradient(to bottom, rgba(91,63,214,0.05) 1px, transparent 1px)',
+    patternSize: '100% 32px',
+    patternOpacity: 0.55,
+    displayFont: "'Syne', sans-serif",
+    bodyFont: "'DM Sans', sans-serif",
+    monoFont: "'IBM Plex Mono', monospace",
+    headlineTracking: '-0.035em',
+    maxWidthClass: 'max-w-[800px]',
+    specimenKind: 'matter-legibility',
+  },
+  'Type Weather': {
+    isDark: false,
+    bg: '#edf3fb',
+    bgRgb: '237, 243, 251',
+    surface: '#e1ebf8',
+    cardBg: '#f7fafe',
+    ink: '#132a63',
+    inkSoft: 'rgba(19, 42, 99, 0.86)',
+    muted: '#536c9e',
+    line: 'rgba(29, 79, 214, 0.14)',
+    lineStrong: 'rgba(29, 79, 214, 0.35)',
+    accent: '#1d4fd6',
+    accentInk: '#ffffff',
+    patternBg:
+      'linear-gradient(to bottom, rgba(29,79,214,0.055) 1px, transparent 1px)',
+    patternSize: '100% 44px',
+    patternOpacity: 0.5,
+    displayFont: "'Cormorant Garamond', serif",
+    bodyFont: "'Plus Jakarta Sans', sans-serif",
+    monoFont: "'IBM Plex Mono', monospace",
+    headlineItalic: true,
+    headlineTracking: '-0.025em',
+    maxWidthClass: 'max-w-[780px]',
+    specimenKind: 'weather-climate',
+  },
+  'Small Ideas, Big Change': {
+    isDark: false,
+    bg: '#fcf8f1',
+    bgRgb: '252, 248, 241',
+    surface: '#f5ede0',
+    cardBg: '#ffffff',
+    ink: '#1a1512',
+    inkSoft: 'rgba(26, 21, 18, 0.86)',
+    muted: '#7a675c',
+    line: 'rgba(240, 73, 31, 0.16)',
+    lineStrong: 'rgba(240, 73, 31, 0.42)',
+    accent: '#f0491f',
+    accentInk: '#ffffff',
+    patternBg:
+      'radial-gradient(rgba(240, 73, 31, 0.08) 1px, transparent 1px)',
+    patternSize: '24px 24px',
+    patternOpacity: 0.35,
+    displayFont: "'Playfair Display', serif",
+    bodyFont: "'Lora', serif",
+    monoFont: "'Space Mono', monospace",
+    headlineTracking: '-0.025em',
+    maxWidthClass: 'max-w-[680px]',
+    useDropCap: true,
+    specimenKind: 'small-edit',
+  },
+  'Quiet Systems': {
+    isDark: false,
+    bg: '#eeece6',
+    bgRgb: '238, 236, 230',
+    surface: '#e4e1d9',
+    cardBg: '#f6f4ef',
+    ink: '#242320',
+    inkSoft: 'rgba(36, 35, 32, 0.82)',
+    muted: '#72706a',
+    line: 'rgba(36, 35, 32, 0.1)',
+    lineStrong: 'rgba(36, 35, 32, 0.22)',
+    accent: '#4e4c46',
+    accentInk: '#f6f4ef',
+    patternBg: 'none',
+    patternSize: 'auto',
+    patternOpacity: 0,
+    displayFont: "'Cormorant Garamond', serif",
+    bodyFont: "'Lora', serif",
+    monoFont: "'IBM Plex Mono', monospace",
+    headlineTracking: '-0.02em',
+    maxWidthClass: 'max-w-[740px]',
+    specimenKind: 'quiet-rhythm',
+  },
+  'Colour Is a Verb': {
+    isDark: false,
+    bg: '#fdf6f8',
+    bgRgb: '253, 246, 248',
+    surface: '#f8e9ef',
+    cardBg: '#ffffff',
+    ink: '#1a1116',
+    inkSoft: 'rgba(26, 17, 22, 0.86)',
+    muted: '#7b5968',
+    line: 'rgba(217, 38, 120, 0.15)',
+    lineStrong: 'rgba(217, 38, 120, 0.42)',
+    accent: '#d92678',
+    accentInk: '#ffffff',
+    patternBg:
+      'radial-gradient(circle at 12px 12px, rgba(217, 38, 120, 0.08) 1.2px, transparent 1.2px)',
+    patternSize: '32px 32px',
+    patternOpacity: 0.45,
+    displayFont: "'Bodoni Moda', serif",
+    bodyFont: "'DM Sans', sans-serif",
+    monoFont: "'Space Mono', monospace",
+    headlineTracking: '-0.03em',
+    maxWidthClass: 'max-w-[800px]',
+    specimenKind: 'colour-triad',
+  },
+  'Letters in Motion': {
+    isDark: true,
+    bg: '#111113',
+    bgRgb: '17, 17, 19',
+    surface: '#1a1a1f',
+    cardBg: '#141418',
+    ink: '#f3f1eb',
+    inkSoft: 'rgba(243, 241, 235, 0.84)',
+    muted: '#9e9da8',
+    line: 'rgba(243, 241, 235, 0.13)',
+    lineStrong: 'rgba(215, 255, 58, 0.48)',
+    accent: '#d7ff3a',
+    accentInk: '#111113',
+    patternBg:
+      'radial-gradient(rgba(215, 255, 58, 0.14) 1px, transparent 1px)',
+    patternSize: '26px 26px',
+    patternOpacity: 0.35,
+    displayFont: "'Syne', sans-serif",
+    bodyFont: "'DM Sans', sans-serif",
+    monoFont: "'Space Mono', monospace",
+    headlineUppercase: true,
+    headlineTracking: '-0.03em',
+    maxWidthClass: 'max-w-[820px]',
+    specimenKind: 'motion-curve',
+  },
+  'The Honest Page': {
+    isDark: false,
+    bg: '#f7f2e7',
+    bgRgb: '247, 242, 231',
+    surface: '#efe8d8',
+    cardBg: '#fbf8f1',
+    ink: '#1f1b18',
+    inkSoft: 'rgba(31, 27, 24, 0.87)',
+    muted: '#6f655c',
+    line: 'rgba(31, 27, 24, 0.14)',
+    lineStrong: 'rgba(181, 36, 28, 0.42)',
+    accent: '#b5241c',
+    accentInk: '#ffffff',
+    patternBg:
+      'linear-gradient(to bottom, rgba(31,27,24,0.03) 1px, transparent 1px)',
+    patternSize: '100% 36px',
+    patternOpacity: 0.45,
+    displayFont: "'Fraunces', serif",
+    bodyFont: "'Source Serif 4', serif",
+    monoFont: "'IBM Plex Mono', monospace",
+    headlineTracking: '-0.03em',
+    maxWidthClass: 'max-w-[740px]',
+    useDropCap: true,
+    specimenKind: 'honest-measure',
+  },
+  'Signal & Noise': {
+    isDark: false,
+    bg: '#f7f4eb',
+    bgRgb: '247, 244, 235',
+    surface: '#ede8d6',
+    cardBg: '#fcfaf3',
+    ink: '#111111',
+    inkSoft: 'rgba(17, 17, 17, 0.86)',
+    muted: '#615f57',
+    line: 'rgba(17, 17, 17, 0.16)',
+    lineStrong: 'rgba(17, 17, 17, 0.42)',
+    accent: '#e6c800',
+    accentInk: '#111111',
+    patternBg:
+      'linear-gradient(to right, rgba(17,17,17,0.04) 1px, transparent 1px)',
+    patternSize: '72px 100%',
+    patternOpacity: 0.45,
+    displayFont: "'Bricolage Grotesque', sans-serif",
+    bodyFont: "'Plus Jakarta Sans', sans-serif",
+    monoFont: "'IBM Plex Mono', monospace",
+    headlineTracking: '-0.04em',
+    maxWidthClass: 'max-w-[820px]',
+    specimenKind: 'signal-focus',
+  },
+};
+
+export function getBookArticleTheme(book: Book): BookArticleTheme {
+  return BOOK_THEMES_BY_TITLE[book.title] ?? BOOK_THEMES_BY_TITLE.GRID;
+}
+
 const SAMPLE_BY_TITLE: Record<string, SampleArticleContent> = {
   LOUD: {
     section1Tag: 'EXCERPT 01 · SCALE',

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Bookmark, X } from 'lucide-react';
 import { Book, getBookCoverUrl } from '../lib/books';
+import { getBookArticleTheme } from '../lib/articles';
 import { computeFocusBookTarget, getBookDimensions } from '../lib/physics';
 import type { ArticlePhase } from './BookStage';
 import { CopyrightLabel, SocialIcons } from './MinimalFooter';
@@ -75,6 +76,11 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
   const isArticleDismissible = Boolean(
     book && (articlePhase === 'turning' || articlePhase === 'zooming' || articlePhase === 'open'),
   );
+  const isDarkArticleSurface = Boolean(
+    book &&
+      getBookArticleTheme(book).isDark &&
+      (articlePhase === 'zooming' || articlePhase === 'open'),
+  );
 
   const dims = getBookDimensions(viewport.w);
   const focusPose = computeFocusBookTarget(viewport.w, viewport.h, dims, isSampleOpen, 0.5, 0.5);
@@ -109,7 +115,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
 
   return (
     <>
-      {/* Top-left round black close/back button with smooth morph between X and back arrow */}
+      {/* Top-left round close/back button with smooth morph between X and back arrow */}
       <button
         type="button"
         onClick={() => {
@@ -122,7 +128,11 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
         aria-label={isArticleDismissible ? 'Back to book spread' : 'Close book focus view'}
         aria-hidden={!isOpen}
         tabIndex={isOpen ? 0 : -1}
-        className={`group fixed top-4 left-4 md:top-6 md:left-7 z-40 w-10 h-10 rounded-full bg-[#141414] text-[#f4f1ea] inline-flex items-center justify-center shadow-[0_8px_20px_rgba(20,20,20,0.2)] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`group fixed top-4 left-4 md:top-6 md:left-7 z-40 w-10 h-10 rounded-full inline-flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isDarkArticleSurface
+            ? 'bg-[#f4f1ea] text-[#141414] shadow-[0_8px_20px_rgba(0,0,0,0.35)]'
+            : 'bg-[#141414] text-[#f4f1ea] shadow-[0_8px_20px_rgba(20,20,20,0.2)]'
+        } ${
           isOpen
             ? 'opacity-100 scale-100 pointer-events-auto hover:scale-105 cursor-pointer'
             : 'opacity-0 scale-0 pointer-events-none'

@@ -9,7 +9,11 @@ import {
   getHighlightSegments,
   matchesQuery,
 } from './books';
-import { getBookArticleHeaderData, getBookSampleSections } from './articles';
+import {
+  getBookArticleHeaderData,
+  getBookArticleTheme,
+  getBookSampleSections,
+} from './articles';
 import {
   ARTICLE_SPRING,
   MORPH_SPRING,
@@ -270,13 +274,25 @@ test('grid and focus targets compute valid bounds on desktop and mobile', () => 
   assert.ok(row1Mobile.y > row0Mobile.y);
 });
 
-test('all 12 books provide article header metadata and non-empty sample excerpt content', () => {
+test('all 12 books provide article header metadata, distinct editorial themes, and sample excerpt content', () => {
+  const seenSpecimenKinds = new Set<string>();
+  const seenAccents = new Set<string>();
+
   for (const book of BOOKS) {
     const header = getBookArticleHeaderData(book);
+    const theme = getBookArticleTheme(book);
     assert.ok(header.kickerLeft.length > 0);
     assert.ok(header.kickerRight.length > 0);
     assert.ok(header.headline.length > 0);
     assert.ok(header.intro.includes(book.note));
+
+    assert.ok(theme.bg.startsWith('#'));
+    assert.equal(theme.bgRgb.split(',').length, 3);
+    assert.ok(theme.displayFont.length > 0);
+    assert.ok(theme.bodyFont.length > 0);
+    assert.ok(theme.monoFont.length > 0);
+    seenSpecimenKinds.add(theme.specimenKind);
+    seenAccents.add(theme.accent);
 
     if (book.title !== 'GRID') {
       const sample = getBookSampleSections(book);
@@ -286,4 +302,7 @@ test('all 12 books provide article header metadata and non-empty sample excerpt 
       assert.equal(sample.specimenHighlights.length, 3);
     }
   }
+
+  assert.equal(seenSpecimenKinds.size, BOOKS.length);
+  assert.equal(seenAccents.size, BOOKS.length);
 });

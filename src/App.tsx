@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BOOKS, Book, Category, THROW_TOASTS, filterBooks } from './lib/books';
+import { getBookArticleTheme } from './lib/articles';
 import { TopBar } from './components/TopBar';
 import { HeroCopy } from './components/HeroCopy';
 import { ArticlePhase, BookStage } from './components/BookStage';
@@ -223,6 +224,11 @@ export default function App() {
   }, [closeFocus]);
 
   const focusedBook = activeBookIndex !== null ? BOOKS[activeBookIndex] ?? null : null;
+  const focusedArticleDark = Boolean(
+    focusedBook &&
+      getBookArticleTheme(focusedBook).isDark &&
+      (articlePhase === 'zooming' || articlePhase === 'open'),
+  );
 
   return (
     <main
@@ -261,6 +267,8 @@ export default function App() {
         shelfBadgeRef={shelfBadgeRef}
         shelfBumpKey={shelfBumpKey}
         onResetHome={handleResetHome}
+        showGridTopFade={layoutMode === 'grid' && activeBookIndex === null}
+        articleDarkMode={focusedArticleDark}
       />
 
       <HeroCopy

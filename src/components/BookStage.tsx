@@ -20,6 +20,7 @@ import {
   integrateBookSpring,
   isBookPoseSettled,
 } from '../lib/physics';
+import { getBookArticleTheme } from '../lib/articles';
 import { GridArticleHeader } from './GridArticlePageTop';
 
 const STAGE_PERSPECTIVE = 1900;
@@ -731,9 +732,10 @@ export const BookStage: React.FC<BookStageProps> = ({
                   />
                 </span>
 
-                {/* Page 2 (exact scaled replica of GridArticleHeader for zero-glitch transition) */}
+                {/* Page 2 (exact scaled replica of GridArticleHeader + theme for zero-glitch transition) */}
                 {activeBookIndex === idx && (() => {
                   const page2Dims = getBookDimensions(viewport.w);
+                  const theme = getBookArticleTheme(book);
                   const isPage2Zoomed =
                     articlePhase === 'zooming' ||
                     articlePhase === 'open' ||
@@ -746,14 +748,16 @@ export const BookStage: React.FC<BookStageProps> = ({
                     <span
                       className="face page2"
                       aria-hidden="true"
-                      style={
-                        isPage2Zoomed
+                      style={{
+                        backgroundColor: theme.bg,
+                        color: theme.ink,
+                        ...(isPage2Zoomed
                           ? { height: `${fullHeightInBook.toFixed(2)}px` }
-                          : undefined
-                      }
+                          : {}),
+                      }}
                     >
                       <span
-                        className="block origin-top-left pointer-events-none"
+                        className="relative block origin-top-left pointer-events-none"
                         style={{
                           width: `${viewport.w}px`,
                           minHeight: `${Math.ceil(
@@ -762,14 +766,23 @@ export const BookStage: React.FC<BookStageProps> = ({
                           transform: `scale(${(
                             page2Dims.bw / Math.max(1, viewport.w)
                           ).toFixed(6)})`,
-                          backgroundColor: '#fbf8f1',
-                          backgroundImage:
-                            'linear-gradient(to right, rgba(20,20,20,0.017) 1px, transparent 1px), linear-gradient(to bottom, rgba(20,20,20,0.017) 1px, transparent 1px)',
-                          backgroundSize: '48px 48px',
+                          backgroundColor: theme.bg,
+                          color: theme.ink,
+                          fontFamily: theme.bodyFont,
                         }}
                       >
-                        <span className="block px-5 md:px-10 pt-24 md:pt-28 pb-20">
-                          <span className="block mx-auto max-w-[820px] text-[#141414]">
+                        {theme.patternOpacity > 0 && theme.patternBg !== 'none' && (
+                          <span
+                            className="pointer-events-none absolute inset-0"
+                            style={{
+                              backgroundImage: theme.patternBg,
+                              backgroundSize: theme.patternSize,
+                              opacity: theme.patternOpacity,
+                            }}
+                          />
+                        )}
+                        <span className="relative block px-5 md:px-10 pt-24 md:pt-28 pb-20">
+                          <span className={`block mx-auto ${theme.maxWidthClass}`}>
                             <GridArticleHeader book={book} />
                           </span>
                         </span>

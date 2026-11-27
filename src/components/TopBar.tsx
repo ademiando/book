@@ -17,6 +17,8 @@ interface TopBarProps {
   shelfBadgeRef: React.RefObject<HTMLSpanElement | null>;
   shelfBumpKey: number;
   onResetHome: () => void;
+  showGridTopFade?: boolean;
+  articleDarkMode?: boolean;
 }
 
 function HighlightedText({ text, query }: { text: string; query: string }) {
@@ -49,6 +51,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   shelfBadgeRef,
   shelfBumpKey,
   onResetHome,
+  showGridTopFade = false,
+  articleDarkMode = false,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const searchWrapRef = useRef<HTMLDivElement>(null);
@@ -132,19 +136,31 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <>
+      {/* Soft paper fade on Grid page matching the Article scroll top fade (sits above books z-20 & hero z-15, below search z-30 & sticky controls z-40) */}
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none fixed inset-x-0 top-0 h-24 z-[25] transition-opacity duration-500 ${
+          showGridTopFade ? 'opacity-100' : 'opacity-0'
+        }`}
+        style={{
+          background:
+            'linear-gradient(to bottom, #f4f1ea 45%, rgba(244, 241, 234, 0.85) 72%, rgba(244, 241, 234, 0) 100%)',
+        }}
+      />
+
       {/* Sticky Center Wordmark (stays visible & fixed on scroll and in focus, without any background bar/lines) */}
       <button
         type="button"
         onClick={onResetHome}
         aria-label="The Atelier home"
-        className="fixed top-4 md:top-5 left-1/2 -translate-x-1/2 z-40 pointer-events-auto text-center cursor-pointer bg-transparent border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414] rounded-sm"
+        className="fixed top-4 md:top-5 left-1/2 -translate-x-1/2 z-40 pointer-events-auto text-center cursor-pointer bg-transparent border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#141414] rounded-sm transition-colors duration-300"
         style={{
           fontFamily: "'Inter Tight', sans-serif",
           fontWeight: 700,
           fontSize: '25px',
           lineHeight: 0.86,
           letterSpacing: '-0.04em',
-          color: '#141414',
+          color: articleDarkMode ? '#f4f1ea' : '#141414',
         }}
       >
         <span className="block">The</span>
@@ -263,7 +279,18 @@ export const TopBar: React.FC<TopBarProps> = ({
             onClick={() => setShelfOpen((o) => !o)}
             aria-expanded={shelfOpen}
             aria-label={`Saved, ${shelfIds.length} saved items`}
-            className="water-droplet water-droplet-delay-2 inline-flex items-center gap-1.5 md:gap-2 h-8 md:h-9 px-2.5 md:px-3.5 text-[11px] md:text-[12.5px] font-medium text-[#141414] cursor-pointer whitespace-nowrap"
+            className={`water-droplet water-droplet-delay-2 inline-flex items-center gap-1.5 md:gap-2 h-8 md:h-9 px-2.5 md:px-3.5 text-[11px] md:text-[12.5px] font-medium cursor-pointer whitespace-nowrap transition-colors duration-300 ${
+              articleDarkMode ? 'text-[#f4f1ea]' : 'text-[#141414]'
+            }`}
+            style={
+              articleDarkMode
+                ? {
+                    background:
+                      'linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.06) 52%, rgba(255, 255, 255, 0.14) 100%)',
+                    borderColor: 'rgba(244, 241, 234, 0.34)',
+                  }
+                : undefined
+            }
           >
             <Bookmark className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Saved</span>
@@ -272,8 +299,12 @@ export const TopBar: React.FC<TopBarProps> = ({
               ref={shelfBadgeRef}
               className={`inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[11px] font-semibold tabular-nums transition-colors ${
                 shelfIds.length > 0
-                  ? 'bg-[#141414] text-[#f4f1ea]'
-                  : 'bg-[rgba(20,20,20,0.12)] text-[#141414]/75'
+                  ? articleDarkMode
+                    ? 'bg-[#f4f1ea] text-[#141414]'
+                    : 'bg-[#141414] text-[#f4f1ea]'
+                  : articleDarkMode
+                    ? 'bg-[rgba(244,241,234,0.22)] text-[#f4f1ea]'
+                    : 'bg-[rgba(20,20,20,0.12)] text-[#141414]/75'
               } ${shelfBumpKey > 0 ? 'shelf-bump' : ''}`}
             >
               {shelfIds.length}

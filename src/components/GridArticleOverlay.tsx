@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Book } from '../lib/books';
-import { getBookSampleSections } from '../lib/articles';
+import { getBookArticleTheme, getBookSampleSections } from '../lib/articles';
 import { GridArticleHeader } from './GridArticlePageTop';
+import { BookArticleSpecimen } from './BookArticleSpecimen';
 import { CopyrightLabel, SocialIcons } from './MinimalFooter';
 
 interface GridArticleOverlayProps {
@@ -118,6 +119,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
   if (!book) return null;
 
   const isGridBook = book.title === 'GRID';
+  const theme = getBookArticleTheme(book);
   const sampleContent = isGridBook ? null : getBookSampleSections(book);
 
   const handleScroll = () => {
@@ -138,34 +140,42 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
           ? 'opacity-100 duration-[380ms] pointer-events-auto'
           : 'opacity-0 duration-[280ms] pointer-events-none'
       }`}
-      style={{ backgroundColor: '#fbf8f1' }}
+      style={{
+        backgroundColor: theme.bg,
+        color: theme.ink,
+        fontFamily: theme.bodyFont,
+      }}
     >
-      {/* Subtle architectural paper grid texture matching GRID monograph */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none fixed inset-0 opacity-[0.28]"
-        style={{
-          backgroundImage:
-            'linear-gradient(to right, rgba(20,20,20,0.06) 1px, transparent 1px), linear-gradient(to bottom, rgba(20,20,20,0.06) 1px, transparent 1px)',
-          backgroundSize: '48px 48px',
-        }}
-      />
+      {/* Subtle bespoke surface texture matching the active book's design voice */}
+      {theme.patternOpacity > 0 && theme.patternBg !== 'none' && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed inset-0"
+          style={{
+            backgroundImage: theme.patternBg,
+            backgroundSize: theme.patternSize,
+            opacity: theme.patternOpacity,
+          }}
+        />
+      )}
 
       {/* Soft paper fade behind sticky top controls while scrolling the article */}
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-x-0 top-0 h-24 z-[39]"
         style={{
-          background:
-            'linear-gradient(to bottom, #fbf8f1 45%, rgba(251, 248, 241, 0.85) 72%, rgba(251, 248, 241, 0) 100%)',
+          background: `linear-gradient(to bottom, ${theme.bg} 45%, rgba(${theme.bgRgb}, 0.85) 72%, rgba(${theme.bgRgb}, 0) 100%)`,
         }}
       />
 
       {/* Reading progress hairline at very top */}
       <div
         aria-hidden="true"
-        className="fixed top-0 left-0 h-[2px] bg-[#141414] z-50 transition-[width] duration-150 ease-out"
-        style={{ width: `${(scrollProgress * 100).toFixed(1)}%` }}
+        className="fixed top-0 left-0 h-[2px] z-50 transition-[width] duration-150 ease-out"
+        style={{
+          width: `${(scrollProgress * 100).toFixed(1)}%`,
+          backgroundColor: theme.accent,
+        }}
       />
 
       {/* Scrollable Long-Form Monograph */}
@@ -177,7 +187,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
         onScroll={handleScroll}
         className="relative h-full w-full overflow-y-auto overscroll-contain px-5 md:px-10 pt-24 md:pt-28 pb-20"
       >
-        <article className="mx-auto max-w-[820px] text-[#141414]">
+        <article className={`mx-auto ${theme.maxWidthClass}`} style={{ color: theme.ink }}>
           {/* Identical top monograph header to zoomed Page 2 — zero glitch handoff */}
           <GridArticleHeader book={book} />
 
@@ -577,36 +587,69 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
               <section className="mt-12 md:mt-16 space-y-6">
                 <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
                   <div className="flex items-baseline gap-3">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#86827a] tabular-nums">
+                    <span
+                      className="text-[11px] font-semibold uppercase tracking-[0.14em] tabular-nums"
+                      style={{ color: theme.muted, fontFamily: theme.monoFont }}
+                    >
                       {sampleContent.section1Tag}
                     </span>
-                    <span className="h-px flex-1 bg-[rgba(20,20,20,0.1)]" />
+                    <span className="h-px flex-1" style={{ backgroundColor: theme.line }} />
                   </div>
 
                   <h2
-                    className="mt-6 text-[26px] md:text-[34px] leading-[1.06] tracking-[-0.03em] font-semibold"
-                    style={{ fontFamily: "'Inter Tight', sans-serif" }}
+                    className={`mt-6 text-[26px] md:text-[34px] leading-[1.06] font-semibold ${
+                      theme.headlineUppercase ? 'uppercase' : ''
+                    } ${theme.headlineItalic ? 'italic font-medium' : ''}`}
+                    style={{
+                      fontFamily: theme.displayFont,
+                      letterSpacing: theme.headlineTracking ?? '-0.03em',
+                      color: theme.ink,
+                      textWrap: 'balance',
+                    }}
                   >
                     {sampleContent.section1Title}
                   </h2>
                 </ScrollReveal>
 
                 <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={120}>
-                  <div className="grid md:grid-cols-2 gap-6 text-[15px] md:text-[16px] leading-[1.7] text-[#141414]/85">
-                    <p className="m-0">{sampleContent.section1Paragraphs[0]}</p>
+                  <div
+                    className="grid md:grid-cols-2 gap-6 text-[15px] md:text-[16px] leading-[1.74]"
+                    style={{ color: theme.inkSoft }}
+                  >
+                    <p
+                      className={`m-0 ${
+                        theme.useDropCap
+                          ? 'first-letter:float-left first-letter:text-[3.1em] first-letter:leading-[0.86] first-letter:mr-2.5 first-letter:mt-1 first-letter:font-semibold'
+                          : ''
+                      }`}
+                    >
+                      {sampleContent.section1Paragraphs[0]}
+                    </p>
                     <p className="m-0">{sampleContent.section1Paragraphs[1]}</p>
                   </div>
                 </ScrollReveal>
 
                 <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={140}>
-                  <blockquote className="my-8 border-l-2 border-[#141414] pl-5 md:pl-7 py-1">
+                  <blockquote
+                    className="my-8 border-y py-6 md:py-7 px-1"
+                    style={{ borderColor: theme.lineStrong }}
+                  >
                     <p
-                      className="m-0 text-[20px] md:text-[26px] leading-[1.25] tracking-[-0.025em] font-medium text-[#141414]"
-                      style={{ fontFamily: "'Inter Tight', sans-serif" }}
+                      className={`m-0 text-[20px] md:text-[26px] leading-[1.28] font-medium ${
+                        theme.headlineItalic ? 'italic' : ''
+                      }`}
+                      style={{
+                        fontFamily: theme.displayFont,
+                        letterSpacing: '-0.02em',
+                        color: theme.ink,
+                      }}
                     >
                       {sampleContent.quote}
                     </p>
-                    <footer className="mt-2.5 text-[12px] text-[#86827a]">
+                    <footer
+                      className="mt-3 text-[12px]"
+                      style={{ color: theme.muted, fontFamily: theme.monoFont }}
+                    >
                       {sampleContent.quoteSource}
                     </footer>
                   </blockquote>
@@ -616,49 +659,39 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
               <section className="mt-12 md:mt-16 space-y-6">
                 <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
                   <div className="flex items-baseline gap-3">
-                    <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#86827a] tabular-nums">
+                    <span
+                      className="text-[11px] font-semibold uppercase tracking-[0.14em] tabular-nums"
+                      style={{ color: theme.muted, fontFamily: theme.monoFont }}
+                    >
                       {sampleContent.section2Tag}
                     </span>
-                    <span className="h-px flex-1 bg-[rgba(20,20,20,0.1)]" />
+                    <span className="h-px flex-1" style={{ backgroundColor: theme.line }} />
                   </div>
 
                   <h2
-                    className="mt-6 text-[24px] md:text-[30px] leading-[1.08] tracking-[-0.03em] font-semibold"
-                    style={{ fontFamily: "'Inter Tight', sans-serif" }}
+                    className={`mt-6 text-[24px] md:text-[30px] leading-[1.08] font-semibold ${
+                      theme.headlineUppercase ? 'uppercase' : ''
+                    } ${theme.headlineItalic ? 'italic font-medium' : ''}`}
+                    style={{
+                      fontFamily: theme.displayFont,
+                      letterSpacing: theme.headlineTracking ?? '-0.03em',
+                      color: theme.ink,
+                      textWrap: 'balance',
+                    }}
                   >
                     {sampleContent.section2Title}
                   </h2>
 
-                  <p className="mt-4 text-[15px] md:text-[16px] leading-[1.75] text-[#141414]/85">
+                  <p
+                    className="mt-4 text-[15px] md:text-[16px] leading-[1.75]"
+                    style={{ color: theme.inkSoft }}
+                  >
                     {sampleContent.section2Paragraph}
                   </p>
                 </ScrollReveal>
 
                 <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={100}>
-                  <figure className="rounded-xl border border-[rgba(20,20,20,0.14)] bg-[#f4f1ea]/90 p-5 md:p-6">
-                    <div className="flex items-center justify-between pb-3 border-b border-[rgba(20,20,20,0.1)]">
-                      <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
-                        {sampleContent.specimenTag}
-                      </span>
-                      <span className="text-[11px] font-medium text-[#141414]">
-                        {sampleContent.specimenLabel}
-                      </span>
-                    </div>
-
-                    <div className="mt-4 grid sm:grid-cols-3 gap-3 text-[12px]">
-                      {sampleContent.specimenHighlights.map((item) => (
-                        <div
-                          key={item.label}
-                          className="rounded-lg bg-[#fbf8f1] border border-[rgba(20,20,20,0.1)] px-3.5 py-3"
-                        >
-                          <span className="block font-semibold text-[#141414]">{item.label}</span>
-                          <span className="block mt-1 text-[#86827a] leading-relaxed">
-                            {item.detail}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </figure>
+                  <BookArticleSpecimen theme={theme} content={sampleContent} />
                 </ScrollReveal>
               </section>
             </>
@@ -666,27 +699,40 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
 
           {/* Closing Colophon & Distinct Close Action */}
           <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
-            <footer className="mt-14 md:mt-18 pt-8 border-t border-[rgba(20,20,20,0.14)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <footer
+              className="mt-14 md:mt-18 pt-8 border-t flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+              style={{ borderColor: theme.lineStrong }}
+            >
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
+                <div
+                  className="text-[11px] font-semibold uppercase tracking-[0.12em]"
+                  style={{ color: theme.muted, fontFamily: theme.monoFont }}
+                >
                   END OF EXCERPT · {book.title} ({book.year})
                 </div>
-                <p className="mt-1 mb-0 text-[13px] text-[#86827a]">
+                <p className="mt-1 mb-0 text-[13px]" style={{ color: theme.muted }}>
                   Return to the book spread or continue exploring the studio collection.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={onClose}
-                className="h-11 px-6 rounded-full bg-[#141414] text-[#f4f1ea] text-[13px] font-medium hover:bg-[#2a2a2a] transition-colors cursor-pointer whitespace-nowrap"
+                className="h-11 px-6 rounded-full text-[13px] font-medium transition-opacity hover:opacity-90 cursor-pointer whitespace-nowrap"
+                style={{
+                  backgroundColor: theme.ink,
+                  color: theme.bg,
+                }}
               >
                 Close excerpt
               </button>
             </footer>
 
-            <div className="mt-10 pt-5 border-t border-[rgba(20,20,20,0.08)] flex items-center justify-between">
-              <CopyrightLabel />
-              <SocialIcons />
+            <div
+              className="mt-10 pt-5 border-t flex items-center justify-between"
+              style={{ borderColor: theme.line }}
+            >
+              <CopyrightLabel dark={theme.isDark} />
+              <SocialIcons dark={theme.isDark} />
             </div>
           </ScrollReveal>
         </article>
