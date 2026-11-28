@@ -96,7 +96,7 @@ export const GridArticleHeader: React.FC<GridArticleHeaderProps> = ({ book }) =>
             Edition
           </dt>
           <dd className="mt-0.5 font-medium" style={{ color: theme.ink }}>
-            Hardcover · {book.year}
+            {book.year}
           </dd>
         </div>
       </dl>

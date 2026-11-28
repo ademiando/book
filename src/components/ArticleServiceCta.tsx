@@ -78,11 +78,19 @@ export const ArticleServiceCta: React.FC<ArticleServiceCtaProps> = ({
           >
             01 — READY TO USE
           </div>
-          <div
-            className="text-[22px] md:text-[26px] font-semibold tracking-[-0.02em] tabular-nums"
-            style={{ fontFamily: theme.displayFont, color: theme.ink }}
-          >
-            IDR 3.000.000
+          <div>
+            <span
+              className="block text-[10.5px] font-semibold uppercase tracking-[0.14em] mb-1"
+              style={{ color: theme.accent, fontFamily: theme.monoFont }}
+            >
+              Start
+            </span>
+            <div
+              className="text-[22px] md:text-[26px] font-semibold tracking-[-0.02em] tabular-nums"
+              style={{ fontFamily: theme.displayFont, color: theme.ink }}
+            >
+              IDR 3.000.000
+            </div>
           </div>
           <div>
             <h3
@@ -114,11 +122,19 @@ export const ArticleServiceCta: React.FC<ArticleServiceCtaProps> = ({
           >
             02 — MADE FOR YOUR BRAND
           </div>
-          <div
-            className="text-[22px] md:text-[26px] font-semibold tracking-[-0.02em] tabular-nums"
-            style={{ fontFamily: theme.displayFont, color: theme.ink }}
-          >
-            IDR 6.000.000
+          <div>
+            <span
+              className="block text-[10.5px] font-semibold uppercase tracking-[0.14em] mb-1"
+              style={{ color: theme.accent, fontFamily: theme.monoFont }}
+            >
+              Start
+            </span>
+            <div
+              className="text-[22px] md:text-[26px] font-semibold tracking-[-0.02em] tabular-nums"
+              style={{ fontFamily: theme.displayFont, color: theme.ink }}
+            >
+              IDR 6.000.000
+            </div>
           </div>
           <div>
             <h3

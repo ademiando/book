@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Eye, EyeOff, Monitor, RotateCw, Smartphone } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Monitor, RotateCw, Smartphone } from 'lucide-react';
 import { Book, getBookCoverTrimScale, getBookCoverUrl } from '../lib/books';
 import { BookArticleTheme } from '../lib/articles';
 
@@ -91,6 +91,27 @@ export const WebsitePreviewStage: React.FC<WebsitePreviewStageProps> = ({
             backgroundColor: theme.surface,
           }}
         >
+          {!liveUrl && (
+            <div
+              role="status"
+              aria-live="polite"
+              className="px-4 md:px-6 py-3.5 flex flex-wrap items-center justify-between gap-3 bg-[#e03a16] text-[#fffaf5]"
+            >
+              <div className="flex items-center gap-2.5">
+                <AlertCircle className="w-4 h-4 shrink-0 text-[#fffaf5]" aria-hidden="true" />
+                <span
+                  className="text-[12px] md:text-[12.5px] font-bold uppercase tracking-[0.14em]"
+                  style={{ fontFamily: theme.monoFont }}
+                >
+                  Development in Progress
+                </span>
+              </div>
+              <p className="m-0 text-[12.5px] md:text-[13px] font-medium text-[#fffaf5]/95">
+                Live website build is currently under active development — interactive concept preview shown below.
+              </p>
+            </div>
+          )}
+
           {/* Slim Viewport Toolbar (no link text) */}
           <div
             className="flex flex-wrap items-center justify-between gap-3 px-4 md:px-6 py-3 border-b text-[11.5px]"

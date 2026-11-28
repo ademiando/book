@@ -195,7 +195,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
           </div>
           <div>
             <span className="block text-[#86827a] text-[11px]">Edition</span>
-            <span className="font-medium text-[#141414]">Hardcover · {book.year}</span>
+            <span className="font-medium text-[#141414]">{book.year}</span>
           </div>
           <div>
             <span className="block text-[#86827a] text-[11px]">Series</span>

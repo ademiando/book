@@ -652,7 +652,7 @@ export function getBookSampleSections(book: Book): SampleArticleContent {
       specimenHighlights: [
         { label: 'Structure', detail: 'Clear grid and deliberate spacing' },
         { label: 'Voice', detail: 'Direct language free of filler' },
-        { label: 'Edition', detail: `Hardcover · ${book.year}` },
+        { label: 'Edition', detail: `${book.year}` },
       ],
     }
   );

@@ -227,23 +227,12 @@ const RAW_BOOKS: Array<{
   },
 ];
 
-const categorySeriesCounter: Record<Category, number> = {
-  Web: 0,
-  Motion: 0,
-  Editions: 0,
-  Systems: 0,
-};
-
-export const BOOKS: Book[] = RAW_BOOKS.map((book, index) => {
-  categorySeriesCounter[book.category] += 1;
-  const seq = String(categorySeriesCounter[book.category]).padStart(3, '0');
-  return {
-    ...book,
-    index,
-    series: `${book.category} · ${seq}`,
-    seed: Math.sin(index * 91.7) * 0.5 + 0.5,
-  };
-});
+export const BOOKS: Book[] = RAW_BOOKS.map((book, index) => ({
+  ...book,
+  index,
+  series: '001',
+  seed: Math.sin(index * 91.7) * 0.5 + 0.5,
+}));
 
 export const LOCAL_COVER_ASSETS: Record<string, string> = {
   'burn-briquette-showcase': './assets/aistudio/IMG-20261128-WA3388_013b4af3.jpg',

@@ -49,16 +49,15 @@ test('catalog contains all 12 books with valid category counts and cover URLs', 
   const gallery = BOOKS.find((b) => b.title === 'Digital Art Gallery');
   assert.equal(burn?.previewUrl, 'https://ademiando.com/charcoal/');
   assert.equal(burn?.format, '3D Landing Web');
-  assert.equal(burn?.series, 'Editions · 001');
+  assert.equal(burn?.series, '001');
   assert.equal(gallery?.previewUrl, 'https://ademiando.github.io/galery');
   assert.equal(gallery?.format, '3D Spatial Web');
-  assert.equal(gallery?.series, 'Web · 001');
+  assert.equal(gallery?.series, '001');
   assert.ok(getBookCoverTrimScale(burn!.id) > 1.1);
   assert.ok(getBookCoverTrimScale(gallery!.id) >= 1.2);
 
-  for (const cat of CATEGORIES) {
-    const inCat = BOOKS.filter((b) => b.category === cat).map((b) => b.series);
-    assert.deepEqual(inCat, [`${cat} · 001`, `${cat} · 002`, `${cat} · 003`]);
+  for (const book of BOOKS) {
+    assert.equal(book.series, '001');
   }
 });
 
