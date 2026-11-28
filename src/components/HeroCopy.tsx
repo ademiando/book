@@ -4,7 +4,7 @@ import {
   BOOKS,
   CATEGORIES,
   Category,
-  getBookCoverTrimScale,
+  getBookCoverImageStyle,
   getBookCoverUrl,
   getCategoryCounts,
 } from '../lib/books';
@@ -143,12 +143,7 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
                       src={getBookCoverUrl(frontBook.id, 160)}
                       alt=""
                       referrerPolicy="no-referrer"
-                      style={{
-                        transform:
-                          getBookCoverTrimScale(frontBook.id) > 1
-                            ? `scale(${getBookCoverTrimScale(frontBook.id)})`
-                            : undefined,
-                      }}
+                      style={getBookCoverImageStyle(frontBook.id)}
                     />
                   </span>
                   <span
@@ -159,12 +154,7 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
                       src={getBookCoverUrl(backBook.id, 160)}
                       alt=""
                       referrerPolicy="no-referrer"
-                      style={{
-                        transform:
-                          getBookCoverTrimScale(backBook.id) > 1
-                            ? `scale(${getBookCoverTrimScale(backBook.id)})`
-                            : undefined,
-                      }}
+                      style={getBookCoverImageStyle(backBook.id)}
                     />
                   </span>
                 </span>

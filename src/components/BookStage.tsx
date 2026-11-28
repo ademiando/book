@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BOOKS, Book, getBookCoverTrimScale, getBookCoverUrl } from '../lib/books';
+import { BOOKS, Book, getBookCoverImageStyle, getBookCoverUrl } from '../lib/books';
 import {
   ARTICLE_SPRING,
   BookDimensions,
@@ -697,47 +697,6 @@ export const BookStage: React.FC<BookStageProps> = ({
               className="book"
             >
               <span className="b3d">
-                {/* Front hinged cover + inner endpaper */}
-                <span className="face front">
-                  <span
-                    className="cv"
-                    style={{ backgroundColor: book.coverColor }}
-                    data-book-cover={idx}
-                  >
-                    {!failedImages[book.id] ? (
-                      <img
-                        src={getBookCoverUrl(book.id, 900)}
-                        alt={book.title}
-                        referrerPolicy="no-referrer"
-                        draggable={false}
-                        style={{
-                          transform:
-                            getBookCoverTrimScale(book.id) > 1
-                              ? `scale(${getBookCoverTrimScale(book.id)})`
-                              : undefined,
-                        }}
-                        onError={() =>
-                          setFailedImages((prev) => ({ ...prev, [book.id]: true }))
-                        }
-                      />
-                    ) : (
-                      <span className="flex flex-col justify-between h-full p-4 text-[#141414]">
-                        <span className="text-[10px] uppercase tracking-widest opacity-70">
-                          {book.category}
-                        </span>
-                        <span className="font-semibold text-base leading-tight">
-                          {book.title}
-                        </span>
-                        <span className="text-[11px] opacity-75">{book.author}</span>
-                      </span>
-                    )}
-                  </span>
-                  <span
-                    className="inside"
-                    style={{ backgroundColor: book.endpaperColor }}
-                  />
-                </span>
-
                 {/* Page 2 (exact scaled replica of GridArticleHeader + theme for zero-glitch transition) */}
                 {activeBookIndex === idx && (() => {
                   const page2Dims = getBookDimensions(viewport.w);
@@ -757,6 +716,7 @@ export const BookStage: React.FC<BookStageProps> = ({
                       style={{
                         backgroundColor: theme.bg,
                         color: theme.ink,
+                        visibility: articlePhase !== 'closed' ? 'visible' : 'hidden',
                         ...(isPage2Zoomed
                           ? { height: `${fullHeightInBook.toFixed(2)}px` }
                           : {}),
@@ -823,6 +783,42 @@ export const BookStage: React.FC<BookStageProps> = ({
                       <span>i</span>
                     </span>
                   </span>
+                </span>
+
+                {/* Front hinged cover + inner endpaper (after pages in DOM to prevent 3D Z-fighting in Chromium) */}
+                <span className="face front">
+                  <span
+                    className={`cv${book.title === 'GRID' ? ' cv-raw' : ''}`}
+                    style={{ backgroundColor: book.coverColor }}
+                    data-book-cover={idx}
+                  >
+                    {!failedImages[book.id] ? (
+                      <img
+                        src={getBookCoverUrl(book.id, 900)}
+                        alt={book.title}
+                        referrerPolicy="no-referrer"
+                        draggable={false}
+                        style={getBookCoverImageStyle(book.id)}
+                        onError={() =>
+                          setFailedImages((prev) => ({ ...prev, [book.id]: true }))
+                        }
+                      />
+                    ) : (
+                      <span className="flex flex-col justify-between h-full p-4 text-[#141414]">
+                        <span className="text-[10px] uppercase tracking-widest opacity-70">
+                          {book.category}
+                        </span>
+                        <span className="font-semibold text-base leading-tight">
+                          {book.title}
+                        </span>
+                        <span className="text-[11px] opacity-75">{book.author}</span>
+                      </span>
+                    )}
+                  </span>
+                  <span
+                    className="inside"
+                    style={{ backgroundColor: book.endpaperColor }}
+                  />
                 </span>
 
                 {/* Back cover */}

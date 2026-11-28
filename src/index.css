@@ -178,6 +178,10 @@ body.focus .book .face {
   z-index: 2;
 }
 
+.cv.cv-raw::before {
+  display: none;
+}
+
 /* Moving specular sheen translated by --gx */
 .cv::after {
   content: '';

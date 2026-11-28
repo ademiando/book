@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AlertCircle, Eye, EyeOff, Monitor, RotateCw, Smartphone } from 'lucide-react';
-import { Book, getBookCoverTrimScale, getBookCoverUrl } from '../lib/books';
+import { Book, getBookCoverImageStyle, getBookCoverUrl } from '../lib/books';
 import { BookArticleTheme } from '../lib/articles';
 
 interface WebsitePreviewStageProps {
@@ -26,7 +26,6 @@ export const WebsitePreviewStage: React.FC<WebsitePreviewStageProps> = ({
   }, [book.id, isPreviewActive]);
 
   const liveUrl = book.previewUrl;
-  const trimScale = getBookCoverTrimScale(book.id);
 
   return (
     <section
@@ -273,7 +272,7 @@ export const WebsitePreviewStage: React.FC<WebsitePreviewStageProps> = ({
 
                   <div className="flex justify-center">
                     <div
-                      className="w-[160px] md:w-[210px] aspect-[140/186] overflow-hidden shadow-2xl"
+                      className="relative w-[160px] md:w-[210px] aspect-[140/186] overflow-hidden shadow-2xl"
                       style={{ backgroundColor: book.coverColor }}
                     >
                       <img
@@ -281,9 +280,7 @@ export const WebsitePreviewStage: React.FC<WebsitePreviewStageProps> = ({
                         alt={book.title}
                         referrerPolicy="no-referrer"
                         className="w-full h-full object-cover block"
-                        style={{
-                          transform: trimScale > 1 ? `scale(${trimScale})` : undefined,
-                        }}
+                        style={getBookCoverImageStyle(book.id)}
                       />
                     </div>
                   </div>

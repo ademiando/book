@@ -3,7 +3,7 @@ import { Bookmark, Search, X } from 'lucide-react';
 import {
   BOOKS,
   Book,
-  getBookCoverTrimScale,
+  getBookCoverImageStyle,
   getBookCoverUrl,
   getHighlightSegments,
   matchesQuery,
@@ -241,7 +241,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         }`}
                       >
                         <span
-                          className="w-8 h-[42px] rounded-[3px] overflow-hidden shrink-0 shadow-sm border border-[rgba(20,20,20,0.08)]"
+                          className="relative w-8 h-[42px] rounded-[3px] overflow-hidden shrink-0 shadow-sm border border-[rgba(20,20,20,0.08)]"
                           style={{ backgroundColor: book.coverColor }}
                         >
                           <img
@@ -249,12 +249,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                             alt={book.title}
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover"
-                            style={{
-                              transform:
-                                getBookCoverTrimScale(book.id) > 1
-                                  ? `scale(${getBookCoverTrimScale(book.id)})`
-                                  : undefined,
-                            }}
+                            style={getBookCoverImageStyle(book.id)}
                           />
                         </span>
                         <span className="min-w-0 flex-1">
@@ -344,7 +339,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                         className="flex items-center gap-2.5 flex-1 min-w-0 text-left cursor-pointer"
                       >
                         <span
-                          className="w-8 h-[42px] rounded-[3px] overflow-hidden shrink-0 shadow-sm border border-[rgba(20,20,20,0.08)]"
+                          className="relative w-8 h-[42px] rounded-[3px] overflow-hidden shrink-0 shadow-sm border border-[rgba(20,20,20,0.08)]"
                           style={{ backgroundColor: book.coverColor }}
                         >
                           <img
@@ -352,12 +347,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                             alt={book.title}
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover"
-                            style={{
-                              transform:
-                                getBookCoverTrimScale(book.id) > 1
-                                  ? `scale(${getBookCoverTrimScale(book.id)})`
-                                  : undefined,
-                            }}
+                            style={getBookCoverImageStyle(book.id)}
                           />
                         </span>
                         <span className="min-w-0 flex-1">

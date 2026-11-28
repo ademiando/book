@@ -41,9 +41,13 @@ test('catalog contains all 12 books with valid category counts and cover URLs', 
   for (const cat of CATEGORIES) {
     assert.equal(counts[cat], 3);
   }
-  const url = getBookCoverUrl(BOOKS[0].id, 900);
-  assert.ok(url.startsWith('https://images.higgs.ai/?default=1&output=webp&url='));
-  assert.ok(url.includes('&w=900&q=85'));
+  assert.equal(
+    getBookCoverUrl(BOOKS[0].id, 900),
+    './assets/aistudio/1795873305827_66ca9b79.jpg',
+  );
+  const remoteUrl = getBookCoverUrl(BOOKS[3].id, 900);
+  assert.ok(remoteUrl.startsWith('https://images.higgs.ai/?default=1&output=webp&url='));
+  assert.ok(remoteUrl.includes('&w=900&q=85'));
 
   const burn = BOOKS.find((b) => b.title === 'Burn');
   const gallery = BOOKS.find((b) => b.title === 'Digital Art Gallery');
@@ -53,7 +57,7 @@ test('catalog contains all 12 books with valid category counts and cover URLs', 
   assert.equal(gallery?.previewUrl, 'https://ademiando.github.io/galery');
   assert.equal(gallery?.format, '3D Spatial Web');
   assert.equal(gallery?.series, '001');
-  assert.ok(getBookCoverTrimScale(burn!.id) > 1.1);
+  assert.ok(getBookCoverTrimScale(burn!.id) > 1);
   assert.ok(getBookCoverTrimScale(gallery!.id) >= 1.2);
 
   for (const book of BOOKS) {

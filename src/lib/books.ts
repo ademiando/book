@@ -235,6 +235,8 @@ export const BOOKS: Book[] = RAW_BOOKS.map((book, index) => ({
 }));
 
 export const LOCAL_COVER_ASSETS: Record<string, string> = {
+  '20261121_033327_214ed3f3-b77e-440f-aba1-a8f6bfef39e1':
+    './assets/aistudio/1795873305827_66ca9b79.jpg',
   'burn-briquette-showcase': './assets/aistudio/IMG-20261128-WA3388_013b4af3.jpg',
   'digital-art-gallery-3d': './assets/aistudio/IMG-20261128-WA3758_79a73070.jpg',
 };
@@ -252,9 +254,34 @@ export function getBookCoverUrl(id: string, width: 900 | 300 | 200 | 160 | 120):
 }
 
 export function getBookCoverTrimScale(id: string): number {
-  if (id === 'burn-briquette-showcase') return 1.12;
+  if (id === '20261121_033327_214ed3f3-b77e-440f-aba1-a8f6bfef39e1') return 1.03;
+  if (id === 'burn-briquette-showcase') return 1.02;
   if (id === 'digital-art-gallery-3d') return 1.22;
   return 1;
+}
+
+export function getBookCoverImageStyle(id: string):
+  | {
+      position: 'absolute';
+      width: string;
+      height: string;
+      left: string;
+      top: string;
+      maxWidth: 'none';
+    }
+  | undefined {
+  const scale = getBookCoverTrimScale(id);
+  if (scale <= 1) return undefined;
+  const size = `${(scale * 100).toFixed(2)}%`;
+  const offset = `${(-((scale - 1) * 50)).toFixed(2)}%`;
+  return {
+    position: 'absolute',
+    width: size,
+    height: size,
+    left: offset,
+    top: offset,
+    maxWidth: 'none',
+  };
 }
 
 export function normalizeText(value: string): string {
