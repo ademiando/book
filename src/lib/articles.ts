@@ -25,8 +25,8 @@ export interface SampleArticleContent {
 
 export type BookArticleSpecimenKind =
   | 'grid-monograph'
-  | 'loud-crop'
-  | 'marks-scale'
+  | 'burn-briquette'
+  | 'gallery-exhibition'
   | 'identity-material'
   | 'matter-legibility'
   | 'weather-climate'
@@ -86,57 +86,58 @@ const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
     bodyFont: "'Inter', sans-serif",
     monoFont: "'IBM Plex Mono', monospace",
     headlineTracking: '-0.04em',
-    maxWidthClass: 'max-w-[820px]',
+    maxWidthClass: 'w-full max-w-[1380px]',
     specimenKind: 'grid-monograph',
   },
-  LOUD: {
-    isDark: false,
-    bg: '#f7f1e6',
-    bgRgb: '247, 241, 230',
-    surface: '#efe6d5',
-    cardBg: '#fbf8f2',
-    ink: '#161310',
-    inkSoft: 'rgba(22, 19, 16, 0.86)',
-    muted: '#736556',
-    line: 'rgba(22, 19, 16, 0.15)',
-    lineStrong: 'rgba(242, 107, 29, 0.48)',
+  Burn: {
+    isDark: true,
+    bg: '#14100e',
+    bgRgb: '20, 16, 14',
+    surface: '#1d1612',
+    cardBg: '#191310',
+    ink: '#f6efe6',
+    inkSoft: 'rgba(246, 239, 230, 0.86)',
+    muted: '#b49d8d',
+    line: 'rgba(246, 239, 230, 0.14)',
+    lineStrong: 'rgba(242, 107, 29, 0.56)',
     accent: '#f26b1d',
-    accentInk: '#ffffff',
+    accentInk: '#14100e',
     patternBg:
-      'radial-gradient(rgba(242, 107, 29, 0.14) 1px, transparent 1px)',
-    patternSize: '18px 18px',
-    patternOpacity: 0.4,
+      'radial-gradient(rgba(242, 107, 29, 0.16) 1px, transparent 1px)',
+    patternSize: '20px 20px',
+    patternOpacity: 0.32,
     displayFont: "'Oswald', sans-serif",
     bodyFont: "'DM Sans', sans-serif",
     monoFont: "'Space Mono', monospace",
     headlineUppercase: true,
     headlineTracking: '-0.015em',
-    maxWidthClass: 'max-w-[840px]',
-    specimenKind: 'loud-crop',
+    maxWidthClass: 'w-full max-w-[1380px]',
+    specimenKind: 'burn-briquette',
   },
-  'Rules of Marks': {
+  'Digital Art Gallery': {
     isDark: false,
-    bg: '#f5f0e6',
-    bgRgb: '245, 240, 230',
-    surface: '#ebe4d5',
-    cardBg: '#fbf8f1',
-    ink: '#141724',
-    inkSoft: 'rgba(20, 23, 36, 0.85)',
-    muted: '#5f677a',
-    line: 'rgba(31, 79, 214, 0.16)',
-    lineStrong: 'rgba(31, 79, 214, 0.36)',
-    accent: '#1f4fd6',
-    accentInk: '#ffffff',
+    bg: '#f4f0e8',
+    bgRgb: '244, 240, 232',
+    surface: '#ebe5d8',
+    cardBg: '#fbf8f2',
+    ink: '#152438',
+    inkSoft: 'rgba(21, 36, 56, 0.86)',
+    muted: '#576c82',
+    line: 'rgba(42, 87, 136, 0.16)',
+    lineStrong: 'rgba(42, 87, 136, 0.36)',
+    accent: '#2a5788',
+    accentInk: '#f4f0e8',
     patternBg:
-      'radial-gradient(circle at 1px 1px, rgba(31, 79, 214, 0.13) 1px, transparent 0)',
+      'radial-gradient(circle at 1px 1px, rgba(42, 87, 136, 0.14) 1px, transparent 0)',
     patternSize: '28px 28px',
-    patternOpacity: 0.45,
-    displayFont: "'Bricolage Grotesque', sans-serif",
+    patternOpacity: 0.38,
+    displayFont: "'Cormorant Garamond', serif",
     bodyFont: "'Plus Jakarta Sans', sans-serif",
     monoFont: "'IBM Plex Mono', monospace",
-    headlineTracking: '-0.035em',
-    maxWidthClass: 'max-w-[800px]',
-    specimenKind: 'marks-scale',
+    headlineTracking: '-0.025em',
+    maxWidthClass: 'w-full max-w-[1380px]',
+    useDropCap: true,
+    specimenKind: 'gallery-exhibition',
   },
   'Shaping Identity': {
     isDark: true,
@@ -159,7 +160,7 @@ const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
     bodyFont: "'Plus Jakarta Sans', sans-serif",
     monoFont: "'IBM Plex Mono', monospace",
     headlineTracking: '-0.03em',
-    maxWidthClass: 'max-w-[780px]',
+    maxWidthClass: 'w-full max-w-[1380px]',
     useDropCap: true,
     specimenKind: 'identity-material',
   },
@@ -184,7 +185,7 @@ const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
     bodyFont: "'DM Sans', sans-serif",
     monoFont: "'IBM Plex Mono', monospace",
     headlineTracking: '-0.035em',
-    maxWidthClass: 'max-w-[800px]',
+    maxWidthClass: 'w-full max-w-[1380px]',
     specimenKind: 'matter-legibility',
   },
   'Type Weather': {
@@ -209,7 +210,7 @@ const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
     monoFont: "'IBM Plex Mono', monospace",
     headlineItalic: true,
     headlineTracking: '-0.025em',
-    maxWidthClass: 'max-w-[780px]',
+    maxWidthClass: 'w-full max-w-[1380px]',
     specimenKind: 'weather-climate',
   },
   'Small Ideas, Big Change': {
@@ -233,7 +234,7 @@ const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
     bodyFont: "'Lora', serif",
     monoFont: "'Space Mono', monospace",
     headlineTracking: '-0.025em',
-    maxWidthClass: 'max-w-[680px]',
+    maxWidthClass: 'w-full max-w-[1380px]',
     useDropCap: true,
     specimenKind: 'small-edit',
   },
@@ -257,7 +258,7 @@ const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
     bodyFont: "'Lora', serif",
     monoFont: "'IBM Plex Mono', monospace",
     headlineTracking: '-0.02em',
-    maxWidthClass: 'max-w-[740px]',
+    maxWidthClass: 'w-full max-w-[1380px]',
     specimenKind: 'quiet-rhythm',
   },
   'Colour Is a Verb': {
@@ -281,7 +282,7 @@ const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
     bodyFont: "'DM Sans', sans-serif",
     monoFont: "'Space Mono', monospace",
     headlineTracking: '-0.03em',
-    maxWidthClass: 'max-w-[800px]',
+    maxWidthClass: 'w-full max-w-[1380px]',
     specimenKind: 'colour-triad',
   },
   'Letters in Motion': {
@@ -306,7 +307,7 @@ const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
     monoFont: "'Space Mono', monospace",
     headlineUppercase: true,
     headlineTracking: '-0.03em',
-    maxWidthClass: 'max-w-[820px]',
+    maxWidthClass: 'w-full max-w-[1380px]',
     specimenKind: 'motion-curve',
   },
   'The Honest Page': {
@@ -330,7 +331,7 @@ const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
     bodyFont: "'Source Serif 4', serif",
     monoFont: "'IBM Plex Mono', monospace",
     headlineTracking: '-0.03em',
-    maxWidthClass: 'max-w-[740px]',
+    maxWidthClass: 'w-full max-w-[1380px]',
     useDropCap: true,
     specimenKind: 'honest-measure',
   },
@@ -355,7 +356,7 @@ const BOOK_THEMES_BY_TITLE: Record<string, BookArticleTheme> = {
     bodyFont: "'Plus Jakarta Sans', sans-serif",
     monoFont: "'IBM Plex Mono', monospace",
     headlineTracking: '-0.04em',
-    maxWidthClass: 'max-w-[820px]',
+    maxWidthClass: 'w-full max-w-[1380px]',
     specimenKind: 'signal-focus',
   },
 };
@@ -365,48 +366,48 @@ export function getBookArticleTheme(book: Book): BookArticleTheme {
 }
 
 const SAMPLE_BY_TITLE: Record<string, SampleArticleContent> = {
-  LOUD: {
-    section1Tag: 'EXCERPT 01 · SCALE',
-    section1Title: 'Type That Occupies the Room Before You Read It',
+  Burn: {
+    section1Tag: '01 · BRIQUETTE EXPORT EXPERIENCE',
+    section1Title: '3D Heat, Grade Authority, and Buyer Conversion',
     section1Paragraphs: [
-      'A poster has two seconds across a crowded street. Marco Teller argues that legibility at distance comes not from adding noise, but from pushing one typographic gesture until the surrounding margin feels electric.',
-      'By cropping letters right at the trim edge, negative space stops acting as a frame and becomes part of the letterform itself—turning every sheet into an architectural billboard.',
+      'Charcoal briquette buyers evaluate suppliers in seconds: ash percentage, fixed carbon, burn duration, and container-load reliability. Burn translates those export specs into a high-impact 3D motion landing page built to earn distributor trust immediately.',
+      'Glowing ember depth, sharp industrial typography, and clear specification modules guide buyers cleanly toward sample requests and container inquiries.',
     ],
     quote:
-      '“Whispering rarely earns attention on a wall. Choose one idea, scale it past comfort, and cut everything else away.”',
-    quoteSource: '— Marco Teller, LOUD (Chapter 01: Street Scale)',
-    section2Tag: 'EXCERPT 02 · CONTRAST',
-    section2Title: 'The Discipline of Heavy Ink and Hard Crops',
+      '“Industrial products deserve flagship digital craft—when buyers feel precision in your landing page, they trust precision in every container.”',
+    quoteSource: '— The Atelier · Burn',
+    section2Tag: '02 · INTERACTIVE ARCHITECTURE',
+    section2Title: 'Product Grades, Lighting Depth & Export Flow',
     section2Paragraph:
-      'In this short studio sample, Teller pairs fluorescent warm orange ink against tight condensed grotesks—demonstrating how bold contrast stays controlled when anchored to an exact bleed grid.',
-    specimenTag: 'SPECIMEN NOTE · POSTER RATIO 5:7',
-    specimenLabel: 'Full-Bleed Crop Study',
+      'Built as a modular 3D React landing experience ready to adapt to your factory brand, product shapes, packaging visuals, and direct export inquiry routing.',
+    specimenTag: 'INTERACTIVE STAGE · BRIQUETTE ARCHITECTURE',
+    specimenLabel: 'Charcoal Briquette Export Experience',
     specimenHighlights: [
-      { label: '01 · Display Mass', detail: '82% ink coverage on primary fold' },
-      { label: '02 · Edge Bleed', detail: 'Letters clipped cleanly at 4mm trim' },
-      { label: '03 · Rest Zone', detail: 'Single hairline caption block at foot' },
+      { label: 'Hero 3D Ember', detail: 'Interactive briquette lighting & heat glow stage' },
+      { label: 'Export Specs', detail: 'Calorific value, ash %, & burn time breakdown' },
+      { label: 'Direct RFQ', detail: 'Fast WhatsApp, email & container quote flow' },
     ],
   },
-  'Rules of Marks': {
-    section1Tag: 'EXCERPT 01 · REDUCTION',
-    section1Title: 'How a Single Circle Learns to Carry a Name',
+  'Digital Art Gallery': {
+    section1Tag: '01 · 3D SPATIAL EXHIBITION',
+    section1Title: 'A Living 3D Digital Gallery Built to Exhibit & Sell Art',
     section1Paragraphs: [
-      'A durable symbol survives fax machines, 16-pixel favicons, and carved stone signs alike. Juno Okafor traces how everyday geometric primitives acquire unmistakable character through subtle optical tension.',
-      'Instead of illustrating every product a company makes, a strong mark chooses one unforgettable silhouette and lets repetition build meaning over years.',
+      'Flat image grids flatten the emotion of fine artwork. Digital Art Gallery transforms your portfolio into a fluid 3D motion exhibition where visitors glide through curated rooms, inspect brushwork detail, and acquire pieces directly.',
+      'Built for independent artists, collectives, and contemporary galleries, every room adapts seamlessly to your identity—from wall lighting and typography to provenance notes and collector sales.',
     ],
     quote:
-      '“Complexity begs for explanation. A quiet mark simply stays in memory after a single glance.”',
-    quoteSource: '— Juno Okafor, Rules of Marks (Chapter 02: Primitive Geometry)',
-    section2Tag: 'EXCERPT 02 · BALANCE',
-    section2Title: 'Optical Corrections Behind Mechanical Circles',
+      '“An exhibition online should feel like stepping into a quiet room with extraordinary light—never like browsing a crowded spreadsheet.”',
+    quoteSource: '— The Atelier · Digital Art Gallery',
+    section2Tag: '02 · CURATORIAL ARCHITECTURE',
+    section2Title: 'Spatial Navigation & Collector Acquisition',
     section2Paragraph:
-      'Perfect mathematics often looks slightly pinched to the human eye. This sample chapter shows how micro-adjustments in stroke weight and aperture open up breathing room inside compact emblems.',
-    specimenTag: 'SPECIMEN NOTE · GRID REDUCTION',
-    specimenLabel: 'Optical Scale Check',
+      'Explore the modular exhibition system below—then launch the interactive live preview to walk through the 3D gallery environment directly on this page.',
+    specimenTag: 'INTERACTIVE STAGE · 3D ART GALLERY',
+    specimenLabel: 'Exhibition & Collector Flow',
     specimenHighlights: [
-      { label: '16 px', detail: 'Favicon silhouette remains distinct' },
-      { label: '48 px', detail: 'App icon counter-forms stay open' },
-      { label: '320 px', detail: 'Exhibition print reveals crisp radii' },
+      { label: '3D Motion Room', detail: 'Perspective wall navigation & museum lighting' },
+      { label: 'Collector Sales', detail: 'Edition status, provenance & direct acquisition' },
+      { label: 'Full Custom', detail: 'Adaptable typography, rooms & artist branding' },
     ],
   },
   'Shaping Identity': {
@@ -612,22 +613,22 @@ const SAMPLE_BY_TITLE: Record<string, SampleArticleContent> = {
 export function getBookArticleHeaderData(book: Book): ArticleHeaderData {
   if (book.title === 'GRID') {
     return {
-      kickerLeft: 'SYSTEMS · MONOGRAPH · EXCERPT II',
-      kickerRight: '60 RECONSTRUCTED LAYOUTS · PP. 02–18',
+      kickerLeft: `${book.series.toUpperCase()} · ${book.format.toUpperCase()}`,
+      kickerRight: '60 RECONSTRUCTED LAYOUTS',
       headline: 'GRID — The Architecture of Quiet Order',
-      intro: `${book.note} Below is the expanded studio essay and four structural frames rebuilt from archival railway timetables, exhibition walls, and contemporary editorial spreads.`,
-      framesValue: '04 Structural Plates',
-      readingValue: '06 Min Essay',
+      intro: `${book.note} Below is the studio essay and four structural frames rebuilt from archival railway timetables, exhibition walls, and editorial spreads.`,
+      framesValue: book.format,
+      readingValue: book.series,
     };
   }
 
   return {
-    kickerLeft: `${book.category.toUpperCase()} · STUDIO EDITION · EXCERPT`,
-    kickerRight: `${book.pages} PAGES · SAMPLE PP. 02–05`,
+    kickerLeft: `${book.series.toUpperCase()} · ${book.year}`,
+    kickerRight: book.format.toUpperCase(),
     headline: book.title,
-    intro: `${book.note} Below is a short studio excerpt introducing the core perspective and visual rhythm from ${book.author}’s edition.`,
-    framesValue: '02 Sample Notes',
-    readingValue: '02 Min Read',
+    intro: book.note,
+    framesValue: book.format,
+    readingValue: book.series,
   };
 }
 

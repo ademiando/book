@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BOOKS, Book, getBookCoverUrl } from '../lib/books';
+import { BOOKS, Book, getBookCoverTrimScale, getBookCoverUrl } from '../lib/books';
 import {
   ARTICLE_SPRING,
   BookDimensions,
@@ -710,6 +710,12 @@ export const BookStage: React.FC<BookStageProps> = ({
                         alt={book.title}
                         referrerPolicy="no-referrer"
                         draggable={false}
+                        style={{
+                          transform:
+                            getBookCoverTrimScale(book.id) > 1
+                              ? `scale(${getBookCoverTrimScale(book.id)})`
+                              : undefined,
+                        }}
                         onError={() =>
                           setFailedImages((prev) => ({ ...prev, [book.id]: true }))
                         }
@@ -812,7 +818,7 @@ export const BookStage: React.FC<BookStageProps> = ({
                       <span>
                         {book.title === 'GRID'
                           ? '60 RECONSTRUCTED LAYOUTS'
-                          : `${book.pages} PAGES · ${book.year}`}
+                          : `${book.series.toUpperCase()} · ${book.year}`}
                       </span>
                       <span>i</span>
                     </span>

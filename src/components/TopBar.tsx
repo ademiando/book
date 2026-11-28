@@ -3,6 +3,7 @@ import { Bookmark, Search, X } from 'lucide-react';
 import {
   BOOKS,
   Book,
+  getBookCoverTrimScale,
   getBookCoverUrl,
   getHighlightSegments,
   matchesQuery,
@@ -136,15 +137,15 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   return (
     <>
-      {/* Soft paper fade on Grid page matching the Article scroll top fade (sits above books z-20 & hero z-15, below search z-30 & sticky controls z-40) */}
+      {/* Soft paper fade on Grid page stopping smoothly right beneath The Atelier wordmark */}
       <div
         aria-hidden="true"
-        className={`pointer-events-none fixed inset-x-0 top-0 h-24 z-[25] transition-opacity duration-500 ${
+        className={`pointer-events-none fixed inset-x-0 top-0 h-[76px] md:h-[84px] z-[25] transition-opacity duration-500 ${
           showGridTopFade ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
           background:
-            'linear-gradient(to bottom, #f4f1ea 45%, rgba(244, 241, 234, 0.85) 72%, rgba(244, 241, 234, 0) 100%)',
+            'linear-gradient(to bottom, #f4f1ea 0%, #f4f1ea 56%, rgba(244, 241, 234, 0.94) 67%, rgba(244, 241, 234, 0.62) 78%, rgba(244, 241, 234, 0.24) 89%, rgba(244, 241, 234, 0) 100%)',
         }}
       />
 
@@ -248,6 +249,12 @@ export const TopBar: React.FC<TopBarProps> = ({
                             alt={book.title}
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover"
+                            style={{
+                              transform:
+                                getBookCoverTrimScale(book.id) > 1
+                                  ? `scale(${getBookCoverTrimScale(book.id)})`
+                                  : undefined,
+                            }}
                           />
                         </span>
                         <span className="min-w-0 flex-1">
@@ -345,6 +352,12 @@ export const TopBar: React.FC<TopBarProps> = ({
                             alt={book.title}
                             referrerPolicy="no-referrer"
                             className="w-full h-full object-cover"
+                            style={{
+                              transform:
+                                getBookCoverTrimScale(book.id) > 1
+                                  ? `scale(${getBookCoverTrimScale(book.id)})`
+                                  : undefined,
+                            }}
                           />
                         </span>
                         <span className="min-w-0 flex-1">

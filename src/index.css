@@ -701,18 +701,18 @@ body.focus .corners-bottom * {
   position: relative;
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.44) 0%,
-    rgba(255, 255, 255, 0.08) 52%,
-    rgba(255, 255, 255, 0.24) 100%
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.02) 48%,
+    rgba(255, 255, 255, 0.1) 100%
   );
-  backdrop-filter: blur(5px) saturate(140%);
-  -webkit-backdrop-filter: blur(5px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(2.5px) saturate(130%);
+  -webkit-backdrop-filter: blur(2.5px) saturate(130%);
+  border: 1px solid rgba(255, 255, 255, 0.62);
   box-shadow:
-    inset 0 2px 3px rgba(255, 255, 255, 0.85),
-    inset 0 -2px 5px rgba(20, 20, 20, 0.08),
-    0 0 0 1px rgba(20, 20, 20, 0.07),
-    0 6px 18px rgba(20, 20, 20, 0.1);
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.85),
+    inset 0 -1.5px 4px rgba(20, 20, 20, 0.05),
+    0 0 0 1px rgba(20, 20, 20, 0.055),
+    0 6px 16px rgba(20, 20, 20, 0.075);
   border-radius: 35px 45px 35px 45px / 45px 35px 45px 35px;
   animation: waterDropletWobble 4s ease-in-out infinite;
   transition:
@@ -743,31 +743,31 @@ body.focus .corners-bottom * {
 .water-droplet:focus-within {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.56) 0%,
-    rgba(255, 255, 255, 0.16) 52%,
-    rgba(255, 255, 255, 0.34) 100%
+    rgba(255, 255, 255, 0.32) 0%,
+    rgba(255, 255, 255, 0.05) 52%,
+    rgba(255, 255, 255, 0.18) 100%
   );
-  border-color: rgba(255, 255, 255, 0.86);
+  border-color: rgba(255, 255, 255, 0.78);
   transform: translateY(-2px);
   animation:
     waterDropletWobble 2s ease-in-out infinite,
     waterSurfaceBounce 0.52s cubic-bezier(0.22, 1.4, 0.36, 1) 1;
   box-shadow:
-    inset 0 3px 5px rgba(255, 255, 255, 0.92),
-    inset 0 -3px 6px rgba(20, 20, 20, 0.12),
-    0 0 0 1px rgba(20, 20, 20, 0.09),
-    0 10px 22px rgba(20, 20, 20, 0.14);
+    inset 0 2px 3px rgba(255, 255, 255, 0.9),
+    inset 0 -2px 5px rgba(20, 20, 20, 0.08),
+    0 0 0 1px rgba(20, 20, 20, 0.07),
+    0 10px 22px rgba(20, 20, 20, 0.11);
 }
 
 .water-droplet-search:hover,
 .water-droplet-search:focus-within {
   background: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.72) 0%,
-    rgba(255, 255, 255, 0.42) 55%,
-    rgba(255, 255, 255, 0.58) 100%
+    rgba(255, 255, 255, 0.4) 0%,
+    rgba(255, 255, 255, 0.14) 55%,
+    rgba(255, 255, 255, 0.24) 100%
   );
-  border-color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.82);
 }
 
 .water-droplet:hover::after {

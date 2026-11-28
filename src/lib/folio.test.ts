@@ -4,6 +4,7 @@ import {
   BOOKS,
   CATEGORIES,
   filterBooks,
+  getBookCoverTrimScale,
   getBookCoverUrl,
   getCategoryCounts,
   getHighlightSegments,
@@ -43,6 +44,22 @@ test('catalog contains all 12 books with valid category counts and cover URLs', 
   const url = getBookCoverUrl(BOOKS[0].id, 900);
   assert.ok(url.startsWith('https://images.higgs.ai/?default=1&output=webp&url='));
   assert.ok(url.includes('&w=900&q=85'));
+
+  const burn = BOOKS.find((b) => b.title === 'Burn');
+  const gallery = BOOKS.find((b) => b.title === 'Digital Art Gallery');
+  assert.equal(burn?.previewUrl, 'https://ademiando.com/charcoal/');
+  assert.equal(burn?.format, '3D Landing Web');
+  assert.equal(burn?.series, 'Editions · 001');
+  assert.equal(gallery?.previewUrl, 'https://ademiando.github.io/galery');
+  assert.equal(gallery?.format, '3D Spatial Web');
+  assert.equal(gallery?.series, 'Web · 001');
+  assert.ok(getBookCoverTrimScale(burn!.id) > 1.1);
+  assert.ok(getBookCoverTrimScale(gallery!.id) >= 1.2);
+
+  for (const cat of CATEGORIES) {
+    const inCat = BOOKS.filter((b) => b.category === cat).map((b) => b.series);
+    assert.deepEqual(inCat, [`${cat} · 001`, `${cat} · 002`, `${cat} · 003`]);
+  }
 });
 
 test('search matching is accent-insensitive across title, author, and category', () => {
@@ -51,15 +68,15 @@ test('search matching is accent-insensitive across title, author, and category',
   assert.equal(matchesQuery(BOOKS[8], 'Fossé'), true);
   assert.equal(matchesQuery(BOOKS[5], 'motion'), true);
   assert.equal(filterBooks(BOOKS, '', 'Editions').length, 3);
-  assert.equal(filterBooks(BOOKS, 'loud', 'Editions').length, 1);
-  assert.equal(filterBooks(BOOKS, 'loud', 'Systems').length, 0);
+  assert.equal(filterBooks(BOOKS, 'burn', 'Editions').length, 1);
+  assert.equal(filterBooks(BOOKS, 'burn', 'Systems').length, 0);
 });
 
 test('highlight segments locate query match cleanly', () => {
-  const segs = getHighlightSegments('Rules of Marks', 'marks');
+  const segs = getHighlightSegments('Digital Art Gallery', 'gallery');
   assert.deepEqual(segs, [
-    { text: 'Rules of ', match: false },
-    { text: 'Marks', match: true },
+    { text: 'Digital Art ', match: false },
+    { text: 'Gallery', match: true },
   ]);
   const accentSegs = getHighlightSegments('Lena Fosse', 'Fossé');
   assert.deepEqual(accentSegs, [

@@ -71,32 +71,32 @@ export const GridArticleHeader: React.FC<GridArticleHeaderProps> = ({ book }) =>
             className="text-[11px] uppercase tracking-[0.08em]"
             style={{ color: theme.muted, fontFamily: theme.monoFont }}
           >
+            Format
+          </dt>
+          <dd className="mt-0.5 font-medium" style={{ color: theme.ink }}>
+            {book.format}
+          </dd>
+        </div>
+        <div>
+          <dt
+            className="text-[11px] uppercase tracking-[0.08em]"
+            style={{ color: theme.muted, fontFamily: theme.monoFont }}
+          >
+            Series
+          </dt>
+          <dd className="mt-0.5 font-medium" style={{ color: theme.ink }}>
+            {book.series}
+          </dd>
+        </div>
+        <div>
+          <dt
+            className="text-[11px] uppercase tracking-[0.08em]"
+            style={{ color: theme.muted, fontFamily: theme.monoFont }}
+          >
             Edition
           </dt>
           <dd className="mt-0.5 font-medium" style={{ color: theme.ink }}>
             Hardcover · {book.year}
-          </dd>
-        </div>
-        <div>
-          <dt
-            className="text-[11px] uppercase tracking-[0.08em]"
-            style={{ color: theme.muted, fontFamily: theme.monoFont }}
-          >
-            Frames
-          </dt>
-          <dd className="mt-0.5 font-medium" style={{ color: theme.ink }}>
-            {header.framesValue}
-          </dd>
-        </div>
-        <div>
-          <dt
-            className="text-[11px] uppercase tracking-[0.08em]"
-            style={{ color: theme.muted, fontFamily: theme.monoFont }}
-          >
-            Reading
-          </dt>
-          <dd className="mt-0.5 font-medium" style={{ color: theme.ink }}>
-            {header.readingValue}
           </dd>
         </div>
       </dl>

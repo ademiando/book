@@ -3,6 +3,8 @@ import { Book } from '../lib/books';
 import { getBookArticleTheme, getBookSampleSections } from '../lib/articles';
 import { GridArticleHeader } from './GridArticlePageTop';
 import { BookArticleSpecimen } from './BookArticleSpecimen';
+import { ArticleServiceCta } from './ArticleServiceCta';
+import { WebsitePreviewStage } from './WebsitePreviewStage';
 import { CopyrightLabel, SocialIcons } from './MinimalFooter';
 
 interface GridArticleOverlayProps {
@@ -17,6 +19,7 @@ interface ScrollRevealProps {
   active: boolean;
   delayMs?: number;
   className?: string;
+  forceReveal?: boolean;
 }
 
 const ScrollReveal: React.FC<ScrollRevealProps> = ({
@@ -25,6 +28,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   active,
   delayMs = 0,
   className = '',
+  forceReveal = false,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
   const [revealed, setRevealed] = useState(false);
@@ -32,6 +36,10 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   useEffect(() => {
     if (!active) {
       setRevealed(false);
+      return;
+    }
+    if (forceReveal) {
+      setRevealed(true);
       return;
     }
     const el = ref.current;
@@ -61,7 +69,7 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [active, scrollRoot]);
+  }, [active, scrollRoot, forceReveal]);
 
   return (
     <div
@@ -87,10 +95,12 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
   const [showConstructionLines, setShowConstructionLines] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [bodyReady, setBodyReady] = useState(false);
+  const [previewActive, setPreviewActive] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
       setBodyReady(false);
+      setPreviewActive(false);
       return;
     }
     if (scrollRef.current) {
@@ -159,12 +169,12 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
         />
       )}
 
-      {/* Soft paper fade behind sticky top controls while scrolling the article */}
+      {/* Soft paper fade behind sticky top controls stopping right beneath The Atelier wordmark */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed inset-x-0 top-0 h-24 z-[39]"
+        className="pointer-events-none fixed inset-x-0 top-0 h-[76px] md:h-[84px] z-[39]"
         style={{
-          background: `linear-gradient(to bottom, ${theme.bg} 45%, rgba(${theme.bgRgb}, 0.85) 72%, rgba(${theme.bgRgb}, 0) 100%)`,
+          background: `linear-gradient(to bottom, ${theme.bg} 0%, ${theme.bg} 56%, rgba(${theme.bgRgb}, 0.94) 67%, rgba(${theme.bgRgb}, 0.62) 78%, rgba(${theme.bgRgb}, 0.24) 89%, rgba(${theme.bgRgb}, 0) 100%)`,
         }}
       />
 
@@ -185,9 +195,12 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
           setScrollEl((prev) => (prev === node ? prev : node));
         }}
         onScroll={handleScroll}
-        className="relative h-full w-full overflow-y-auto overscroll-contain px-5 md:px-10 pt-24 md:pt-28 pb-20"
+        className="relative h-full w-full overflow-y-auto overscroll-contain px-5 md:px-10 pt-24 md:pt-28 pb-4 md:pb-6 flex flex-col"
       >
-        <article className={`mx-auto ${theme.maxWidthClass}`} style={{ color: theme.ink }}>
+        <article
+          className={`mx-auto flex-1 flex flex-col ${theme.maxWidthClass}`}
+          style={{ color: theme.ink }}
+        >
           {/* Identical top monograph header to zoomed Page 2 — zero glitch handoff */}
           <GridArticleHeader book={book} />
 
@@ -229,9 +242,9 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
               </div>
             </ScrollReveal>
 
-            {/* Frame 01: Interactive Column Ratio Specimen */}
+            {/* Frame 01: Interactive Column Ratio Specimen (Full-width borderless layout) */}
             <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={160}>
-              <figure className="mt-6 rounded-xl border border-[rgba(20,20,20,0.14)] bg-[#f4f1ea]/90 p-5 md:p-6">
+              <figure className="m-0 mt-8 py-8 border-y border-[rgba(20,20,20,0.14)]">
                 <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[rgba(20,20,20,0.1)]">
                   <div>
                     <span className="block text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
@@ -241,7 +254,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
                       Interactive {columnPreset}-Column Page Matrix (Margin 1 : Gutter 0.38)
                     </span>
                   </div>
-                  <div className="inline-flex items-center gap-1 rounded-full border border-[rgba(20,20,20,0.12)] bg-[#fbf8f1] p-1">
+                  <div className="inline-flex items-center gap-1 rounded-full border border-[rgba(20,20,20,0.16)] p-1">
                     {([4, 8, 12] as const).map((cols) => (
                       <button
                         key={cols}
@@ -259,32 +272,32 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
                   </div>
                 </div>
 
-                <div className="mt-5 relative rounded-lg border border-[rgba(20,20,20,0.12)] bg-[#fbf8f1] p-4 md:p-6 overflow-hidden">
+                <div className="mt-6 relative py-4 overflow-hidden">
                   <div
-                    className="grid gap-2 md:gap-2.5 h-36 md:h-44"
+                    className="grid gap-2 md:gap-2.5 h-36 md:h-48"
                     style={{ gridTemplateColumns: `repeat(${columnPreset}, minmax(0, 1fr))` }}
                   >
                     {Array.from({ length: columnPreset }).map((_, idx) => (
                       <div
                         key={idx}
-                        className="relative rounded-[3px] border border-dashed border-[rgba(20,20,20,0.18)] bg-[rgba(20,20,20,0.03)] flex flex-col justify-between p-1.5"
+                        className="relative border border-dashed border-[rgba(20,20,20,0.18)] bg-[rgba(20,20,20,0.03)] flex flex-col justify-between p-1.5"
                       >
                         <span className="text-[9px] tabular-nums text-[#86827a]">
                           {String(idx + 1).padStart(2, '0')}
                         </span>
                         {idx < Math.floor(columnPreset / 2) && (
-                          <span className="h-2.5 rounded-[2px] bg-[#141414]/80" />
+                          <span className="h-2.5 bg-[#141414]/80" />
                         )}
                       </div>
                     ))}
                   </div>
 
                   <div className="mt-4 grid grid-cols-12 gap-2.5 text-[11px] tabular-nums text-[#86827a]">
-                    <div className="col-span-5 rounded-[4px] bg-[#141414] text-[#f4f1ea] px-3 py-2 flex items-center justify-between">
+                    <div className="col-span-5 bg-[#141414] text-[#f4f1ea] px-3 py-2 flex items-center justify-between">
                       <span>Primary Mass</span>
                       <span>{Math.round((5 / 12) * 100)}%</span>
                     </div>
-                    <div className="col-span-7 rounded-[4px] border border-[rgba(20,20,20,0.2)] px-3 py-2 flex items-center justify-between text-[#141414]">
+                    <div className="col-span-7 border border-[rgba(20,20,20,0.2)] px-3 py-2 flex items-center justify-between text-[#141414]">
                       <span>Editorial Field &amp; Counter-Margin</span>
                       <span>{Math.round((7 / 12) * 100)}%</span>
                     </div>
@@ -325,9 +338,9 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
               </p>
             </ScrollReveal>
 
-            {/* Frame 02: Timetable Reconstruction Specimen */}
+            {/* Frame 02: Timetable Reconstruction Specimen (Full-width borderless layout) */}
             <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={100}>
-              <figure className="rounded-xl border border-[rgba(20,20,20,0.14)] bg-[#f4f1ea]/90 p-5 md:p-6">
+              <figure className="m-0 py-8 border-y border-[rgba(20,20,20,0.14)]">
               <div className="flex items-center justify-between pb-3 border-b border-[rgba(20,20,20,0.12)]">
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
                   FRAME 02 · PLATE 14 RECONSTRUCTION — SBB TIMETABLE LOGIC
@@ -335,8 +348,8 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
                 <span className="text-[11px] font-mono text-[#86827a]">BASELINE 8PT</span>
               </div>
 
-              <div className="mt-4 overflow-x-auto">
-                <div className="min-w-[480px] bg-[#fbf8f1] border border-[rgba(20,20,20,0.12)] rounded-lg p-4 md:p-5 text-[12.5px] tabular-nums">
+              <div className="mt-5 overflow-x-auto">
+                <div className="min-w-[480px] py-2 text-[12.5px] tabular-nums">
                   <div className="grid grid-cols-[72px_1fr_92px_70px] gap-3 pb-2 border-b-2 border-[#141414] text-[10.5px] font-semibold uppercase tracking-[0.1em] text-[#86827a]">
                     <span>Dep.</span>
                     <span>Route Corridor</span>
@@ -351,7 +364,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
                   ].map((row) => (
                     <div
                       key={row.time}
-                      className="grid grid-cols-[72px_1fr_92px_70px] gap-3 py-2.5 border-b border-[rgba(20,20,20,0.1)] last:border-b-0 items-baseline"
+                      className="grid grid-cols-[72px_1fr_92px_70px] gap-3 py-3 border-b border-[rgba(20,20,20,0.1)] last:border-b-0 items-baseline"
                     >
                       <span className="font-semibold text-[#141414]">{row.time}</span>
                       <span className="font-medium tracking-[-0.01em] text-[#141414]/90">{row.route}</span>
@@ -362,14 +375,14 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
                 </div>
               </div>
 
-              <div className="mt-4 grid sm:grid-cols-3 gap-3 text-[11.5px] text-[#86827a]">
-                <div className="rounded-lg bg-[#fbf8f1] border border-[rgba(20,20,20,0.08)] px-3 py-2">
+              <div className="mt-6 pt-5 border-t border-[rgba(20,20,20,0.1)] grid sm:grid-cols-3 gap-4 text-[12px] text-[#86827a]">
+                <div>
                   <strong className="text-[#141414]">[A] Fixed Time Column:</strong> 72px anchor locks the eye before reading destination.
                 </div>
-                <div className="rounded-lg bg-[#fbf8f1] border border-[rgba(20,20,20,0.08)] px-3 py-2">
+                <div>
                   <strong className="text-[#141414]">[B] Hairline Separators:</strong> Horizontal rules replace boxes to keep ink density light.
                 </div>
-                <div className="rounded-lg bg-[#fbf8f1] border border-[rgba(20,20,20,0.08)] px-3 py-2">
+                <div>
                   <strong className="text-[#141414]">[C] Contrast Hierarchy:</strong> Heavy top rule establishes direction immediately.
                 </div>
               </div>
@@ -419,9 +432,9 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
               </blockquote>
             </ScrollReveal>
 
-            {/* Frame 03: Spread Comparison Frame */}
+            {/* Frame 03: Spread Comparison Frame (Full-width borderless layout) */}
             <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={110}>
-              <figure className="rounded-xl border border-[rgba(20,20,20,0.14)] bg-[#f4f1ea]/90 p-5 md:p-6">
+              <figure className="m-0 py-8 border-y border-[rgba(20,20,20,0.14)]">
               <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[rgba(20,20,20,0.1)]">
                 <div>
                   <span className="block text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
@@ -434,78 +447,78 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowConstructionLines((v) => !v)}
-                  className="px-3 py-1.5 rounded-full border border-[rgba(20,20,20,0.18)] bg-[#fbf8f1] text-[11.5px] font-medium text-[#141414] hover:border-[#141414] transition-colors cursor-pointer"
+                  className="px-3 py-1.5 rounded-full border border-[rgba(20,20,20,0.18)] text-[11.5px] font-medium text-[#141414] hover:border-[#141414] transition-colors cursor-pointer"
                 >
                   {showConstructionLines ? 'Hide grid lines' : 'Show grid lines'}
                 </button>
               </div>
 
-              <div className="mt-5 grid md:grid-cols-2 gap-4">
+              <div className="mt-6 grid md:grid-cols-2 gap-8">
                 {/* Left Spread: Static 6/6 */}
-                <div className="rounded-lg border border-[rgba(20,20,20,0.12)] bg-[#fbf8f1] p-4">
+                <div className="py-2">
                   <div className="text-[10.5px] font-semibold uppercase tracking-[0.1em] text-[#86827a] mb-3">
                     A · Static Symmetry (6 + 6)
                   </div>
-                  <div className="grid grid-cols-2 gap-3 h-36">
+                  <div className="grid grid-cols-2 gap-3 h-40">
                     <div
-                      className={`rounded-[3px] p-2.5 flex flex-col justify-between ${
+                      className={`p-2.5 flex flex-col justify-between ${
                         showConstructionLines
                           ? 'border border-dashed border-[rgba(20,20,20,0.22)]'
                           : ''
                       }`}
                     >
-                      <div className="h-3 w-3/4 bg-[#141414]/85 rounded-[1px]" />
+                      <div className="h-3 w-3/4 bg-[#141414]/85" />
                       <div className="space-y-1.5">
-                        <div className="h-1.5 w-full bg-[#141414]/20 rounded-[1px]" />
-                        <div className="h-1.5 w-5/6 bg-[#141414]/20 rounded-[1px]" />
-                        <div className="h-1.5 w-4/6 bg-[#141414]/20 rounded-[1px]" />
+                        <div className="h-1.5 w-full bg-[#141414]/20" />
+                        <div className="h-1.5 w-5/6 bg-[#141414]/20" />
+                        <div className="h-1.5 w-4/6 bg-[#141414]/20" />
                       </div>
                     </div>
                     <div
-                      className={`rounded-[3px] p-2.5 flex flex-col justify-between ${
+                      className={`p-2.5 flex flex-col justify-between ${
                         showConstructionLines
                           ? 'border border-dashed border-[rgba(20,20,20,0.22)]'
                           : ''
                       }`}
                     >
-                      <div className="h-3 w-3/4 bg-[#141414]/85 rounded-[1px]" />
+                      <div className="h-3 w-3/4 bg-[#141414]/85" />
                       <div className="space-y-1.5">
-                        <div className="h-1.5 w-full bg-[#141414]/20 rounded-[1px]" />
-                        <div className="h-1.5 w-5/6 bg-[#141414]/20 rounded-[1px]" />
-                        <div className="h-1.5 w-4/6 bg-[#141414]/20 rounded-[1px]" />
+                        <div className="h-1.5 w-full bg-[#141414]/20" />
+                        <div className="h-1.5 w-5/6 bg-[#141414]/20" />
+                        <div className="h-1.5 w-4/6 bg-[#141414]/20" />
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Right Spread: Dynamic 5/7 */}
-                <div className="rounded-lg border border-[rgba(20,20,20,0.2)] bg-[#fbf8f1] p-4">
+                <div className="py-2">
                   <div className="text-[10.5px] font-semibold uppercase tracking-[0.1em] text-[#141414] mb-3">
                     B · Dynamic Counterpoint (5 + 7 + Hanging Rail)
                   </div>
-                  <div className="grid grid-cols-12 gap-3 h-36">
+                  <div className="grid grid-cols-12 gap-3 h-40">
                     <div
-                      className={`col-span-5 rounded-[3px] p-2.5 flex flex-col justify-end ${
+                      className={`col-span-5 p-2.5 flex flex-col justify-end ${
                         showConstructionLines
                           ? 'border border-dashed border-[rgba(20,20,20,0.25)] bg-[rgba(20,20,20,0.025)]'
                           : ''
                       }`}
                     >
                       <div className="text-[10px] font-mono text-[#86827a] mb-1">FIG. 04</div>
-                      <div className="h-1.5 w-4/5 bg-[#141414]/35 rounded-[1px]" />
+                      <div className="h-1.5 w-4/5 bg-[#141414]/35" />
                     </div>
                     <div
-                      className={`col-span-7 rounded-[3px] p-2.5 flex flex-col justify-between ${
+                      className={`col-span-7 p-2.5 flex flex-col justify-between ${
                         showConstructionLines
                           ? 'border border-dashed border-[rgba(20,20,20,0.25)]'
                           : ''
                       }`}
                     >
-                      <div className="h-4 w-5/6 bg-[#141414] rounded-[1px]" />
+                      <div className="h-4 w-5/6 bg-[#141414]" />
                       <div className="space-y-1.5">
-                        <div className="h-1.5 w-full bg-[#141414]/25 rounded-[1px]" />
-                        <div className="h-1.5 w-11/12 bg-[#141414]/25 rounded-[1px]" />
-                        <div className="h-1.5 w-3/4 bg-[#141414]/25 rounded-[1px]" />
+                        <div className="h-1.5 w-full bg-[#141414]/25" />
+                        <div className="h-1.5 w-11/12 bg-[#141414]/25" />
+                        <div className="h-1.5 w-3/4 bg-[#141414]/25" />
                       </div>
                     </div>
                   </div>
@@ -532,7 +545,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
                 From Museum Wall to Fluid Viewport
               </h2>
 
-              <p className="mt-6 text-[15px] md:text-[16px] leading-[1.75] text-[#141414]/85">
+              <p className="mt-6 text-[15px] md:text-[16px] leading-[1.75] text-[#141414]/85 max-w-[68ch]">
                 In the final section of the book, Vahl translates physical print proportions into
                 responsive spatial coordinates. Whether designing a 140mm pocket edition, a three-meter
                 exhibition title wall, or a fluid browser canvas, the secret is preserving the
@@ -541,9 +554,9 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
               </p>
             </ScrollReveal>
 
-            {/* Frame 04: Scale Matrix */}
+            {/* Frame 04: Scale Matrix (Full-width borderless layout) */}
             <ScrollReveal scrollRoot={scrollEl} active={bodyReady} delayMs={100}>
-              <figure className="rounded-xl border border-[rgba(20,20,20,0.14)] bg-[#f4f1ea]/90 p-5 md:p-6">
+              <figure className="m-0 py-8 border-y border-[rgba(20,20,20,0.14)]">
               <div className="pb-3 border-b border-[rgba(20,20,20,0.1)] flex items-center justify-between">
                 <span className="text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#86827a]">
                   FRAME 04 · PROPORTIONAL SCALE MATRIX
@@ -551,7 +564,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
                 <span className="text-[11px] font-mono text-[#86827a]">BASE × 1.327</span>
               </div>
 
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3 text-[12px] tabular-nums">
+              <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-6 text-[12px] tabular-nums">
                 {[
                   { label: 'Pocket Folio', dim: '140 × 186 mm', cols: '4 Col', ratio: '38%' },
                   { label: 'Monograph', dim: '210 × 278 mm', cols: '8 Col', ratio: '62%' },
@@ -560,7 +573,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className="rounded-lg border border-[rgba(20,20,20,0.12)] bg-[#fbf8f1] p-3.5 flex flex-col justify-between gap-3"
+                    className="pt-3 border-t border-[rgba(20,20,20,0.12)] flex flex-col justify-between gap-3"
                   >
                     <div>
                       <span className="block text-[10px] uppercase tracking-[0.1em] text-[#86827a]">
@@ -697,10 +710,25 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
             </>
           ) : null}
 
-          {/* Closing Colophon & Distinct Close Action */}
+          {/* Full-width Website Preview Stage on every book page */}
           <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
+            <WebsitePreviewStage
+              book={book}
+              theme={theme}
+              isPreviewActive={previewActive}
+              onTogglePreview={() => setPreviewActive((prev) => !prev)}
+            />
+          </ScrollReveal>
+
+          {/* Full-width Service Commission & Licensing CTA on every book page */}
+          <ScrollReveal scrollRoot={scrollEl} active={bodyReady}>
+            <ArticleServiceCta theme={theme} bookTitle={book.title} />
+          </ScrollReveal>
+
+          {/* Closing Colophon & Bottom Footer matching Grid page bottom edge */}
+          <ScrollReveal scrollRoot={scrollEl} active={bodyReady} className="mt-auto">
             <footer
-              className="mt-14 md:mt-18 pt-8 border-t flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+              className="mt-14 pt-8 border-t flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
               style={{ borderColor: theme.lineStrong }}
             >
               <div>
@@ -728,7 +756,7 @@ export const GridArticleOverlay: React.FC<GridArticleOverlayProps> = ({
             </footer>
 
             <div
-              className="mt-10 pt-5 border-t flex items-center justify-between"
+              className="mt-8 pt-4 border-t flex items-center justify-between"
               style={{ borderColor: theme.line }}
             >
               <CopyrightLabel dark={theme.isDark} />

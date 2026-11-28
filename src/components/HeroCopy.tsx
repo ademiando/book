@@ -1,6 +1,13 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { BOOKS, CATEGORIES, Category, getBookCoverUrl, getCategoryCounts } from '../lib/books';
+import {
+  BOOKS,
+  CATEGORIES,
+  Category,
+  getBookCoverTrimScale,
+  getBookCoverUrl,
+  getCategoryCounts,
+} from '../lib/books';
 
 interface HeroCopyProps {
   layoutMode: 'orbit' | 'grid';
@@ -136,6 +143,12 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
                       src={getBookCoverUrl(frontBook.id, 160)}
                       alt=""
                       referrerPolicy="no-referrer"
+                      style={{
+                        transform:
+                          getBookCoverTrimScale(frontBook.id) > 1
+                            ? `scale(${getBookCoverTrimScale(frontBook.id)})`
+                            : undefined,
+                      }}
                     />
                   </span>
                   <span
@@ -146,6 +159,12 @@ export const HeroCopy: React.FC<HeroCopyProps> = ({
                       src={getBookCoverUrl(backBook.id, 160)}
                       alt=""
                       referrerPolicy="no-referrer"
+                      style={{
+                        transform:
+                          getBookCoverTrimScale(backBook.id) > 1
+                            ? `scale(${getBookCoverTrimScale(backBook.id)})`
+                            : undefined,
+                      }}
                     />
                   </span>
                 </span>

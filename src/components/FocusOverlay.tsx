@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowLeft, Bookmark, X } from 'lucide-react';
-import { Book, getBookCoverUrl } from '../lib/books';
+import { Book, getBookCoverTrimScale, getBookCoverUrl } from '../lib/books';
 import { getBookArticleTheme } from '../lib/articles';
 import { computeFocusBookTarget, getBookDimensions } from '../lib/physics';
 import type { ArticlePhase } from './BookStage';
@@ -191,7 +191,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
         <div className="mt-4 md:mt-6 py-3 border-y border-[rgba(20,20,20,0.1)] grid grid-cols-3 gap-3 text-[12px] tabular-nums">
           <div>
             <span className="block text-[#86827a] text-[11px]">Format</span>
-            <span className="font-medium text-[#141414]">{book.pages}</span>
+            <span className="font-medium text-[#141414]">{book.format}</span>
           </div>
           <div>
             <span className="block text-[#86827a] text-[11px]">Edition</span>
@@ -199,7 +199,7 @@ export const FocusOverlay: React.FC<FocusOverlayProps> = ({
           </div>
           <div>
             <span className="block text-[#86827a] text-[11px]">Series</span>
-            <span className="font-medium text-[#141414]">{book.score.toFixed(1)} / 5</span>
+            <span className="font-medium text-[#141414]">{book.series}</span>
           </div>
         </div>
 
@@ -352,6 +352,10 @@ export function launchFlyToShelfAnimation(
   img.style.width = '100%';
   img.style.height = '100%';
   img.style.objectFit = 'cover';
+  const trimScale = getBookCoverTrimScale(book.id);
+  if (trimScale > 1) {
+    img.style.transform = `scale(${trimScale})`;
+  }
   clone.appendChild(img);
   document.body.appendChild(clone);
 

@@ -6,6 +6,8 @@ export interface Book {
   title: string;
   author: string;
   category: Category;
+  format: string;
+  series: string;
   pages: number;
   year: number;
   score: number;
@@ -15,6 +17,7 @@ export interface Book {
   note: string;
   baseTilt: number;
   seed: number;
+  previewUrl?: string;
 }
 
 export const CATEGORIES: readonly Category[] = [
@@ -29,6 +32,7 @@ const RAW_BOOKS: Array<{
   title: string;
   author: string;
   category: Category;
+  format: string;
   pages: number;
   year: number;
   score: number;
@@ -37,12 +41,14 @@ const RAW_BOOKS: Array<{
   endpaperColor: string;
   note: string;
   baseTilt: number;
+  previewUrl?: string;
 }> = [
   {
     id: '20261121_033327_214ed3f3-b77e-440f-aba1-a8f6bfef39e1',
     title: 'GRID',
     author: 'Ines Vahl',
     category: 'Systems',
+    format: 'Design System',
     pages: 248,
     year: 2023,
     score: 4.9,
@@ -53,38 +59,43 @@ const RAW_BOOKS: Array<{
     baseTilt: -16,
   },
   {
-    id: '20261121_033326_84bf819c-5088-4118-894d-254c41530560',
-    title: 'LOUD',
-    author: 'Marco Teller',
+    id: 'burn-briquette-showcase',
+    title: 'Burn',
+    author: 'The Atelier',
     category: 'Editions',
+    format: '3D Landing Web',
     pages: 192,
-    year: 2024,
-    score: 4.7,
+    year: 2025,
+    score: 4.8,
     coverColor: '#f26b1d',
     spineColor: '#c9520f',
     endpaperColor: '#141414',
-    note: 'Posters that refuse to whisper. A field guide to scale, contrast and the courage to crop.',
+    note: 'A bold 3D motion landing page crafted for a charcoal briquette export company—built with glowing ember depth, grade specs, and buyer conversion.',
     baseTilt: 12,
+    previewUrl: 'https://ademiando.com/charcoal/',
   },
   {
-    id: '20261121_033326_08a6f155-e502-4d1d-95a6-60b7769e8b67',
-    title: 'Rules of Marks',
-    author: 'Juno Okafor',
+    id: 'digital-art-gallery-3d',
+    title: 'Digital Art Gallery',
+    author: 'The Atelier',
     category: 'Web',
+    format: '3D Spatial Web',
     pages: 212,
-    year: 2024,
-    score: 4.8,
-    coverColor: '#efe6d4',
-    spineColor: '#1f4fd6',
-    endpaperColor: '#f26b1d',
-    note: 'How a circle becomes a company. Logos, symbols and the quiet grammar that makes a mark feel inevitable.',
+    year: 2025,
+    score: 4.9,
+    coverColor: '#3a6289',
+    spineColor: '#1e3a5f',
+    endpaperColor: '#f4e6d2',
+    note: 'A 3D motion digital art gallery where artists exhibit curated collections in spatial rooms, showcase provenance, and sell works online.',
     baseTilt: -8,
+    previewUrl: 'https://ademiando.github.io/galery',
   },
   {
     id: '20261121_033326_c5a053e3-7715-4568-9125-10dbe94553a2',
     title: 'Shaping Identity',
     author: 'Elena Marsh',
     category: 'Web',
+    format: 'Brand Casebook',
     pages: 304,
     year: 2022,
     score: 4.9,
@@ -99,6 +110,7 @@ const RAW_BOOKS: Array<{
     title: 'Make it Matter',
     author: 'Theo Brandt',
     category: 'Motion',
+    format: 'Type Monograph',
     pages: 176,
     year: 2025,
     score: 4.6,
@@ -113,6 +125,7 @@ const RAW_BOOKS: Array<{
     title: 'Type Weather',
     author: 'Ada Kowal',
     category: 'Motion',
+    format: 'Typeface Atlas',
     pages: 228,
     year: 2024,
     score: 4.8,
@@ -127,6 +140,7 @@ const RAW_BOOKS: Array<{
     title: 'Small Ideas, Big Change',
     author: 'Rui Sato',
     category: 'Editions',
+    format: 'Pocket Manifesto',
     pages: 160,
     year: 2023,
     score: 4.5,
@@ -141,6 +155,7 @@ const RAW_BOOKS: Array<{
     title: 'Quiet Systems',
     author: 'Noor Haddad',
     category: 'Systems',
+    format: 'UI Architecture',
     pages: 196,
     year: 2022,
     score: 4.7,
@@ -155,6 +170,7 @@ const RAW_BOOKS: Array<{
     title: 'Colour Is a Verb',
     author: 'Lena Fosse',
     category: 'Editions',
+    format: 'Palette Index',
     pages: 184,
     year: 2025,
     score: 4.6,
@@ -169,6 +185,7 @@ const RAW_BOOKS: Array<{
     title: 'Letters in Motion',
     author: 'Kai Mendez',
     category: 'Motion',
+    format: 'Kinetic Guide',
     pages: 220,
     year: 2025,
     score: 4.8,
@@ -183,6 +200,7 @@ const RAW_BOOKS: Array<{
     title: 'The Honest Page',
     author: 'Clara Weiss',
     category: 'Systems',
+    format: 'Layout System',
     pages: 264,
     year: 2021,
     score: 4.9,
@@ -197,6 +215,7 @@ const RAW_BOOKS: Array<{
     title: 'Signal & Noise',
     author: 'Omar Reyes',
     category: 'Web',
+    format: 'Brand Strategy',
     pages: 236,
     year: 2024,
     score: 4.7,
@@ -208,19 +227,45 @@ const RAW_BOOKS: Array<{
   },
 ];
 
-export const BOOKS: Book[] = RAW_BOOKS.map((book, index) => ({
-  ...book,
-  index,
-  seed: Math.sin(index * 91.7) * 0.5 + 0.5,
-}));
+const categorySeriesCounter: Record<Category, number> = {
+  Web: 0,
+  Motion: 0,
+  Editions: 0,
+  Systems: 0,
+};
+
+export const BOOKS: Book[] = RAW_BOOKS.map((book, index) => {
+  categorySeriesCounter[book.category] += 1;
+  const seq = String(categorySeriesCounter[book.category]).padStart(3, '0');
+  return {
+    ...book,
+    index,
+    series: `${book.category} · ${seq}`,
+    seed: Math.sin(index * 91.7) * 0.5 + 0.5,
+  };
+});
+
+export const LOCAL_COVER_ASSETS: Record<string, string> = {
+  'burn-briquette-showcase': './assets/aistudio/IMG-20261128-WA3388_013b4af3.jpg',
+  'digital-art-gallery-3d': './assets/aistudio/IMG-20261128-WA3758_79a73070.jpg',
+};
 
 export function getBookPngUrl(id: string): string {
   return `https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_${id}.png`;
 }
 
 export function getBookCoverUrl(id: string, width: 900 | 300 | 200 | 160 | 120): string {
+  if (LOCAL_COVER_ASSETS[id]) {
+    return LOCAL_COVER_ASSETS[id];
+  }
   const png = getBookPngUrl(id);
   return `https://images.higgs.ai/?default=1&output=webp&url=${encodeURIComponent(png)}&w=${width}&q=85`;
+}
+
+export function getBookCoverTrimScale(id: string): number {
+  if (id === 'burn-briquette-showcase') return 1.12;
+  if (id === 'digital-art-gallery-3d') return 1.22;
+  return 1;
 }
 
 export function normalizeText(value: string): string {
